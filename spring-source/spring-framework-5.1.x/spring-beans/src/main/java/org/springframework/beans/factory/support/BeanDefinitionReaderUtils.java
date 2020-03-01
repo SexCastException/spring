@@ -58,12 +58,14 @@ public abstract class BeanDefinitionReaderUtils {
 			@Nullable String parentName, @Nullable String className, @Nullable ClassLoader classLoader) throws ClassNotFoundException {
 
 		GenericBeanDefinition bd = new GenericBeanDefinition();
+		// parentName可能为空
 		bd.setParentName(parentName);
 		if (className != null) {
 			if (classLoader != null) {
+				// 如果classLoader不为空，则使用以传人的classLoader加载类对象并保存到beanClass
 				bd.setBeanClass(ClassUtils.forName(className, classLoader));
 			}
-			else {
+			else {	// 否则不加载只是记录className
 				bd.setBeanClassName(className);
 			}
 		}

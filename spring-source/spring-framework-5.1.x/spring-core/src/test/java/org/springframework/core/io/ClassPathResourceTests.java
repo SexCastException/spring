@@ -16,14 +16,15 @@
 
 package org.springframework.core.io;
 
+import org.junit.Test;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.*;
 
 /**
@@ -40,10 +41,14 @@ public class ClassPathResourceTests {
 	private static final String FQ_RESOURCE_PATH = PACKAGE_PATH + '/' + NONEXISTENT_RESOURCE_NAME;
 
 	/**
+	 * 具有前导斜杠的FQ资源路径
 	 * Absolute path version of {@link #FQ_RESOURCE_PATH}.
 	 */
 	private static final String FQ_RESOURCE_PATH_WITH_LEADING_SLASH = '/' + FQ_RESOURCE_PATH;
 
+	/**
+	 * 描述模式
+	 */
 	private static final Pattern DESCRIPTION_PATTERN = Pattern.compile("^class path resource \\[(.+?)\\]$");
 
 
@@ -130,12 +135,16 @@ public class ClassPathResourceTests {
 		assertEquals(expectedPath, match);
 	}
 
+	/**
+	 * 断言异常包含完全限定路径
+	 *
+	 * @param resource
+	 */
 	private void assertExceptionContainsFullyQualifiedPath(ClassPathResource resource) {
 		try {
 			resource.getInputStream();
 			fail("FileNotFoundException expected for resource: " + resource);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			assertThat(ex, instanceOf(FileNotFoundException.class));
 			assertThat(ex.getMessage(), containsString(FQ_RESOURCE_PATH));
 		}

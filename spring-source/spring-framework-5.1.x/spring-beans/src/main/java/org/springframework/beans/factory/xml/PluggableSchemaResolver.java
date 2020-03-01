@@ -16,23 +16,22 @@
 
 package org.springframework.beans.factory.xml;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@link EntityResolver} implementation that attempts to resolve schema URLs into
@@ -58,6 +57,7 @@ import org.springframework.util.CollectionUtils;
 public class PluggableSchemaResolver implements EntityResolver {
 
 	/**
+	 * XSD文件的默认路径
 	 * The location of the file that defines schema mappings.
 	 * Can be present in multiple JAR files.
 	 */
@@ -69,9 +69,15 @@ public class PluggableSchemaResolver implements EntityResolver {
 	@Nullable
 	private final ClassLoader classLoader;
 
+	/**
+	 * 默认等于 {@link PluggableSchemaResolver#DEFAULT_SCHEMA_MAPPINGS_LOCATION}
+	 */
 	private final String schemaMappingsLocation;
 
-	/** Stores the mapping of schema URL -> local schema path. */
+	/**
+	 * key：schema文件的URL路径，value：schema文件的path路径 <br>
+	 * Stores the mapping of schema URL -> local schema path.
+	 */
 	@Nullable
 	private volatile Map<String, String> schemaMappings;
 
@@ -79,8 +85,9 @@ public class PluggableSchemaResolver implements EntityResolver {
 	/**
 	 * Loads the schema URL -> schema file location mappings using the default
 	 * mapping file pattern "META-INF/spring.schemas".
+	 *
 	 * @param classLoader the ClassLoader to use for loading
-	 * (can be {@code null}) to use the default ClassLoader)
+	 *                    (can be {@code null}) to use the default ClassLoader)
 	 * @see PropertiesLoaderUtils#loadAllProperties(String, ClassLoader)
 	 */
 	public PluggableSchemaResolver(@Nullable ClassLoader classLoader) {
@@ -91,10 +98,11 @@ public class PluggableSchemaResolver implements EntityResolver {
 	/**
 	 * Loads the schema URL -> schema file location mappings using the given
 	 * mapping file pattern.
-	 * @param classLoader the ClassLoader to use for loading
-	 * (can be {@code null}) to use the default ClassLoader)
+	 *
+	 * @param classLoader            the ClassLoader to use for loading
+	 *                               (can be {@code null}) to use the default ClassLoader)
 	 * @param schemaMappingsLocation the location of the file that defines schema mappings
-	 * (must not be empty)
+	 *                               (must not be empty)
 	 * @see PropertiesLoaderUtils#loadAllProperties(String, ClassLoader)
 	 */
 	public PluggableSchemaResolver(@Nullable ClassLoader classLoader, String schemaMappingsLocation) {
@@ -113,14 +121,17 @@ public class PluggableSchemaResolver implements EntityResolver {
 		}
 
 		if (systemId != null) {
+			// 获取资源路径
 			String resourceLocation = getSchemaMappings().get(systemId);
 			if (resourceLocation == null && systemId.startsWith("https:")) {
 				// Retrieve canonical http schema mapping even for https declaration
 				resourceLocation = getSchemaMappings().get("http:" + systemId.substring(6));
 			}
 			if (resourceLocation != null) {
+				// 加载类路径下指定的资源，并得到输入流InputStream对象
 				Resource resource = new ClassPathResource(resourceLocation, this.classLoader);
 				try {
+					// 初始化InputSource对象并返回
 					InputSource source = new InputSource(resource.getInputStream());
 					source.setPublicId(publicId);
 					source.setSystemId(systemId);
@@ -128,8 +139,7 @@ public class PluggableSchemaResolver implements EntityResolver {
 						logger.trace("Found XML schema [" + systemId + "] in classpath: " + resourceLocation);
 					}
 					return source;
-				}
-				catch (FileNotFoundException ex) {
+				} catch (FileNotFoundException ex) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Could not find XML schema [" + systemId + "]: " + resource, ex);
 					}
@@ -142,6 +152,8 @@ public class PluggableSchemaResolver implements EntityResolver {
 	}
 
 	/**
+	 * 如果 {@link PluggableSchemaResolver#schemaMappings}为null，则从 {@link PluggableSchemaResolver#schemaMappingsLocation}
+	 * 读取数据，并将得到的数据更新 {@code schemaMappings} <br>
 	 * Load the specified schema mappings lazily.
 	 */
 	private Map<String, String> getSchemaMappings() {
@@ -154,16 +166,18 @@ public class PluggableSchemaResolver implements EntityResolver {
 						logger.trace("Loading schema mappings from [" + this.schemaMappingsLocation + "]");
 					}
 					try {
+						// 使用指定的classLoader类加载器读取schemaMappingsLocation指定的资源路径
 						Properties mappings =
 								PropertiesLoaderUtils.loadAllProperties(this.schemaMappingsLocation, this.classLoader);
 						if (logger.isTraceEnabled()) {
 							logger.trace("Loaded schema mappings: " + mappings);
 						}
 						schemaMappings = new ConcurrentHashMap<>(mappings.size());
+						// 将Properties对象保存的键值对，合并到schemaMappings对象
 						CollectionUtils.mergePropertiesIntoMap(mappings, schemaMappings);
+						// 更新成员属性
 						this.schemaMappings = schemaMappings;
-					}
-					catch (IOException ex) {
+					} catch (IOException ex) {
 						throw new IllegalStateException(
 								"Unable to load schema mappings from location [" + this.schemaMappingsLocation + "]", ex);
 					}
