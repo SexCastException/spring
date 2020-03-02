@@ -6,6 +6,7 @@
 	<bean id="myTest" class="com.huazai.springframework.test.MyTestBean">
 		<property name="age" value="24"></property>
 		<property name="name" value="PYH"></property>
+		<meta key="name" value="NPException"/>
 	</bean>
 
 </beans>

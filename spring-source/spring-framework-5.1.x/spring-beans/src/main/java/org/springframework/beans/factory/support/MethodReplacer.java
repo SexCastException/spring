@@ -32,10 +32,12 @@ import java.lang.reflect.Method;
 public interface MethodReplacer {
 
 	/**
+	 * 重新实现给定的方法。<br>
 	 * Reimplement the given method.
-	 * @param obj the instance we're reimplementing the method for
-	 * @param method the method to reimplement
-	 * @param args arguments to the method
+	 *
+	 * @param obj    the instance we're reimplementing the method for 被重写方法所在实例
+	 * @param method the method to reimplement 被重写的方法
+	 * @param args   arguments to the method 被重写方法的实参
 	 * @return return value for the method
 	 */
 	Object reimplement(Object obj, Method method, Object[] args) throws Throwable;

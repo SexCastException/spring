@@ -192,6 +192,7 @@ public abstract class CollectionUtils {
 	}
 
 	/**
+	 * 返回candidates集合中第一个与source匹配的元素 <br>
 	 * Return the first element in '{@code candidates}' that is contained in
 	 * '{@code source}'. If no element in '{@code candidates}' is present in
 	 * '{@code source}' returns {@code null}. Iteration order is

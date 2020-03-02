@@ -906,6 +906,7 @@ public abstract class StringUtils {
 
 	/**
 	 * 将字符集合转为字符数组并返回，如果集合为空，则返回空的字符数组 <br>
+	 *
 	 * Copy the given {@link Collection} into a {@code String} array.
 	 * <p>The {@code Collection} must contain {@code String} elements only.
 	 *
@@ -1164,11 +1165,11 @@ public abstract class StringUtils {
 	 * tokens. A delimiter is always a single character; for multi-character
 	 * delimiters, consider using {@link #delimitedListToStringArray}.
 	 *
-	 * @param str               the {@code String} to tokenize (potentially {@code null} or empty)
-	 * @param delimiters        the delimiter characters, assembled as a {@code String}
+	 * @param str               the {@code String} to tokenize (potentially {@code null} or empty) 被分隔的字符串
+	 * @param delimiters        the delimiter characters, assembled as a {@code String} 分隔符
 	 *                          (each of the characters is individually considered as a delimiter)
-	 * @param trimTokens        trim the tokens via {@link String#trim()}
-	 * @param ignoreEmptyTokens omit empty tokens from the result array
+	 * @param trimTokens        trim the tokens via {@link String#trim()} 是否去掉被分隔之后的每个字符串前后空串，默认true
+	 * @param ignoreEmptyTokens omit empty tokens from the result array 是否忽略分隔之后的空串，默认true
 	 *                          (only applies to tokens that are empty after trimming; StringTokenizer
 	 *                          will not consider subsequent delimiters as token in the first place).
 	 * @return an array of the tokens
@@ -1188,9 +1189,10 @@ public abstract class StringUtils {
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken();
 			if (trimTokens) {
+				// 去掉token前后空串
 				token = token.trim();
 			}
-			if (!ignoreEmptyTokens || token.length() > 0) {
+			if (!ignoreEmptyTokens || token.length() > 0) {	// 是否忽略分隔之后的空串
 				tokens.add(token);
 			}
 		}
