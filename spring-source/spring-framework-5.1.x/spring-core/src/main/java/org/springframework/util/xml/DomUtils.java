@@ -91,6 +91,7 @@ public abstract class DomUtils {
 	}
 
 	/**
+	 * 返回ele第一个子节点名称与childEleName相匹配的子节点 <br>
 	 * Utility method that returns the first child element identified by its name.
 	 *
 	 * @param ele          the DOM element to analyze
@@ -101,9 +102,11 @@ public abstract class DomUtils {
 	public static Element getChildElementByTagName(Element ele, String childEleName) {
 		Assert.notNull(ele, "Element must not be null");
 		Assert.notNull(childEleName, "Element name must not be null");
+		// 获取并遍历ele所有子元素
 		NodeList nl = ele.getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
+			// 返回第一个与childEleName名称相匹配的节点
 			if (node instanceof Element && nodeNameMatch(node, childEleName)) {
 				return (Element) node;
 			}
@@ -112,6 +115,7 @@ public abstract class DomUtils {
 	}
 
 	/**
+	 * 返回ele第一个子节点名称与childEleName相匹配的子节点文本值
 	 * Utility method that returns the first child element value identified by its name.
 	 *
 	 * @param ele          the DOM element to analyze
@@ -192,6 +196,7 @@ public abstract class DomUtils {
 	}
 
 	/**
+	 * node节点的名称或本地名称是否与给定的desiredName字符串相匹配
 	 * Matches the given node's name and local name against the given desired name.
 	 */
 	private static boolean nodeNameMatch(Node node, String desiredName) {

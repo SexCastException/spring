@@ -32,6 +32,9 @@ public class RuntimeBeanReference implements BeanReference {
 
 	private final String beanName;
 
+	/**
+	 * false表示refName变量为ref标签的bean属性值，否则为ref标签的parent属性值
+	 */
 	private final boolean toParent;
 
 	@Nullable
@@ -40,6 +43,7 @@ public class RuntimeBeanReference implements BeanReference {
 
 	/**
 	 * Create a new RuntimeBeanReference to the given bean name.
+	 *
 	 * @param beanName name of the target bean
 	 */
 	public RuntimeBeanReference(String beanName) {
@@ -49,9 +53,10 @@ public class RuntimeBeanReference implements BeanReference {
 	/**
 	 * Create a new RuntimeBeanReference to the given bean name,
 	 * with the option to mark it as reference to a bean in the parent factory.
+	 *
 	 * @param beanName name of the target bean
 	 * @param toParent whether this is an explicit reference to a bean in the
-	 * parent factory
+	 *                 parent factory
 	 */
 	public RuntimeBeanReference(String beanName, boolean toParent) {
 		Assert.hasText(beanName, "'beanName' must not be empty");
