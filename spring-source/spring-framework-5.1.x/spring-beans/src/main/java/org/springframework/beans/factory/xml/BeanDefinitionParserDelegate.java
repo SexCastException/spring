@@ -204,6 +204,7 @@ public class BeanDefinitionParserDelegate {
 	private final ParseState parseState = new ParseState();
 
 	/**
+	 * 存储所有使用过的bean名称 <br>
 	 * Stores all used bean names so we can enforce uniqueness on a per
 	 * beans-element basis. Duplicate bean ids/names may not exist within the
 	 * same level of beans element nesting, but may be duplicated across levels.
@@ -384,6 +385,10 @@ public class BeanDefinitionParserDelegate {
 	 * Parses the supplied {@code <bean>} element. May return {@code null}
 	 * if there were errors during parse. Errors are reported to the
 	 * {@link org.springframework.beans.factory.parsing.ProblemReporter}.
+	 *
+	 * @param ele
+	 * @param containingBean 嵌套bean
+	 * @return
 	 */
 	@Nullable
 	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, @Nullable BeanDefinition containingBean) {
@@ -418,11 +423,12 @@ public class BeanDefinitionParserDelegate {
 
 		// 对bean标签的除name和id属性之外的属性和其子标签解析
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
+		// 为解析后的beanDefinition注册名称
 		if (beanDefinition != null) {
 			if (!StringUtils.hasText(beanName)) {    // beanName为空或空串
 				try {
-					// 如果不存在beanName那么根据Spring中提供的命名规则为当前bean生成对应的beanName
-					if (containingBean != null) {
+					if (containingBean != null) {    // 是否是嵌套bean
+						// 如果不存在beanName那么根据Spring中提供的命名规则为当前bean生成对应的beanName
 						beanName = BeanDefinitionReaderUtils.generateBeanName(
 								beanDefinition, this.readerContext.getRegistry(), true);
 					} else {
@@ -520,9 +526,9 @@ public class BeanDefinitionParserDelegate {
 
 			// 解析子标签 meta，并将解析的结果保存到bd对象的attribute属性中
 			parseMetaElements(ele, bd);
-			// 解析子标签 lookup-method，并将解析的结果封装到bd的MethodOverrides类型的集合中
+			// 解析子标签 lookup-method，并将解析的结果封装到bd的MethodOverride类型的集合中
 			parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
-			// 解析子标签 replaced-method，并将解析的结果封装到bd的MethodOverrides类型的集合中
+			// 解析子标签 replaced-method，并将解析的结果封装到bd的MethodOverride类型的集合中
 			parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
 
 			// 解析子标签 constructor-arg
@@ -735,10 +741,10 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	/**
-	 * 解析bean标签的property子标签 <br>
+	 * 遍历解析bean标签的property子标签 <br>
 	 * Parse property sub-elements of the given bean element.
 	 *
-	 * @param beanEle property标签对象
+	 * @param beanEle bean标签对象
 	 * @param bd
 	 */
 	public void parsePropertyElements(Element beanEle, BeanDefinition bd) {
@@ -752,12 +758,14 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	/**
+	 * 遍历解析qualifier标签 <br>
 	 * Parse qualifier sub-elements of the given bean element.
 	 */
 	public void parseQualifierElements(Element beanEle, AbstractBeanDefinition bd) {
 		NodeList nl = beanEle.getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
+			// 是否是qualifier标签
 			if (isCandidateElement(node) && nodeNameEquals(node, QUALIFIER_ELEMENT)) {
 				parseQualifierElement((Element) node, bd);
 			}
@@ -786,7 +794,7 @@ public class BeanDefinitionParserDelegate {
 				// 将解析的结果封装到LookupOverride对象中
 				LookupOverride override = new LookupOverride(methodName, beanRef);
 				override.setSource(extractSource(ele));
-				// 将override对象保存到overrides的override属性值
+				// 将override对象保存到MethodOverrides对象的override属性值
 				overrides.addOverride(override);
 			}
 		}
@@ -827,7 +835,7 @@ public class BeanDefinitionParserDelegate {
 					}
 				}
 				replaceOverride.setSource(extractSource(replacedMethodEle));
-				// 将replaceOverride对象保存到overrides对象的overrides属性中
+				// 将replaceOverride对象保存到MethodOverrides对象的overrides属性中
 				overrides.addOverride(replaceOverride);
 			}
 		}
@@ -897,9 +905,14 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	/**
+	 * 解析bean标签的property子标签 <br>
 	 * Parse a property element.
+	 *
+	 * @param ele property标签对象
+	 * @param bd
 	 */
 	public void parsePropertyElement(Element ele, BeanDefinition bd) {
+		// 获取property标签的name属性值
 		String propertyName = ele.getAttribute(NAME_ATTRIBUTE);
 		if (!StringUtils.hasLength(propertyName)) {
 			error("Tag 'property' must have a 'name' attribute", ele);
@@ -907,6 +920,7 @@ public class BeanDefinitionParserDelegate {
 		}
 		this.parseState.push(new PropertyEntry(propertyName));
 		try {
+			// 同一个属性值不能配置多个property
 			if (bd.getPropertyValues().contains(propertyName)) {
 				error("Multiple 'property' definitions for property '" + propertyName + "'", ele);
 				return;
@@ -922,9 +936,14 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	/**
+	 * 解析qualifier标签 <br>
 	 * Parse a qualifier element.
+	 *
+	 * @param ele qualifier标签对象
+	 * @param bd
 	 */
 	public void parseQualifierElement(Element ele, AbstractBeanDefinition bd) {
+		// 获取qualifier标签的type属性值
 		String typeName = ele.getAttribute(TYPE_ATTRIBUTE);
 		if (!StringUtils.hasLength(typeName)) {
 			error("Tag 'qualifier' must have a 'type' attribute", ele);
@@ -932,20 +951,27 @@ public class BeanDefinitionParserDelegate {
 		}
 		this.parseState.push(new QualifierEntry(typeName));
 		try {
+			// 创建AutowireCandidateQualifier对象封装qualifier标签的type和value属性值
 			AutowireCandidateQualifier qualifier = new AutowireCandidateQualifier(typeName);
 			qualifier.setSource(extractSource(ele));
+			// 获取qualifier标签的value属性值
 			String value = ele.getAttribute(VALUE_ATTRIBUTE);
 			if (StringUtils.hasLength(value)) {
 				qualifier.setAttribute(AutowireCandidateQualifier.VALUE_KEY, value);
 			}
+			// 遍历解析qualifier标签的子节点（attribute节点）
 			NodeList nl = ele.getChildNodes();
 			for (int i = 0; i < nl.getLength(); i++) {
 				Node node = nl.item(i);
+				// 获取qualifier标签的子节点attribute节点
 				if (isCandidateElement(node) && nodeNameEquals(node, QUALIFIER_ATTRIBUTE_ELEMENT)) {
 					Element attributeEle = (Element) node;
+					// 获取attribute标签的key属性值
 					String attributeName = attributeEle.getAttribute(KEY_ATTRIBUTE);
+					// 获取value标签的属性值
 					String attributeValue = attributeEle.getAttribute(VALUE_ATTRIBUTE);
 					if (StringUtils.hasLength(attributeName) && StringUtils.hasLength(attributeValue)) {
+						// 创建BeanMetadataAttribute对象封装attribute标签的属性值
 						BeanMetadataAttribute attribute = new BeanMetadataAttribute(attributeName, attributeValue);
 						attribute.setSource(extractSource(attributeEle));
 						qualifier.addMetadataAttribute(attribute);
@@ -1050,7 +1076,7 @@ public class BeanDefinitionParserDelegate {
 	 * @param ele              subelement of property element; we don't know which yet
 	 * @param bd               the current bean definition (if any)
 	 * @param defaultValueType the default type (class name) for any
-	 *                         {@code <value>} tag that might be created
+	 *                         {@code <value>} tag that might be created.value标签的type属性默认值或集合标签的value-type属性值
 	 */
 	@Nullable
 	public Object parsePropertySubElement(Element ele, @Nullable BeanDefinition bd, @Nullable String defaultValueType) {
@@ -1059,7 +1085,7 @@ public class BeanDefinitionParserDelegate {
 		} else if (nodeNameEquals(ele, BEAN_ELEMENT)) {    // 解析bean标签
 			// bean标签的子孙节点中又配置了bean标签的情况下，嵌套解析bean标签
 			BeanDefinitionHolder nestedBd = parseBeanDefinitionElement(ele, bd);
-			if (nestedBd != null) {
+			if (nestedBd != null) {    // 解析嵌套bean的自定义标签
 				nestedBd = decorateBeanDefinitionIfRequired(ele, nestedBd, bd);
 			}
 			return nestedBd;
@@ -1147,7 +1173,7 @@ public class BeanDefinitionParserDelegate {
 	 * Return a typed String value Object for the given value element.
 	 *
 	 * @param ele             value标签对象
-	 * @param defaultTypeName value标签的type属性默认值
+	 * @param defaultTypeName value标签的type属性默认值或集合标签的value-type属性值
 	 * @return
 	 */
 	public Object parseValueElement(Element ele, @Nullable String defaultTypeName) {
@@ -1209,49 +1235,82 @@ public class BeanDefinitionParserDelegate {
 	public Object parseArrayElement(Element arrayEle, @Nullable BeanDefinition bd) {
 		// 获取array标签的value-type属性值
 		String elementType = arrayEle.getAttribute(VALUE_TYPE_ATTRIBUTE);
+		// 获取array标签的所有子节点
 		NodeList nl = arrayEle.getChildNodes();
 		ManagedArray target = new ManagedArray(elementType, nl.getLength());
 		target.setSource(extractSource(arrayEle));
+		// 这一步似乎多余，构造器已经把elementType初始化elementTypeName属性值了
 		target.setElementTypeName(elementType);
+		// 解析array标签的merge属性并初始化mergeEnabled属性
 		target.setMergeEnabled(parseMergeAttribute(arrayEle));
+		// 解析array元素
 		parseCollectionElements(nl, target, bd, elementType);
 		return target;
 	}
 
 	/**
+	 * 解析list标签 <br>
 	 * Parse a list element.
+	 *
+	 * @param collectionEle list标签对象
+	 * @param bd
+	 * @return
 	 */
 	public List<Object> parseListElement(Element collectionEle, @Nullable BeanDefinition bd) {
+		// 获取list标签的value-type属性值
 		String defaultElementType = collectionEle.getAttribute(VALUE_TYPE_ATTRIBUTE);
+		// 获取list标签子节点
 		NodeList nl = collectionEle.getChildNodes();
 		ManagedList<Object> target = new ManagedList<>(nl.getLength());
 		target.setSource(extractSource(collectionEle));
 		target.setElementTypeName(defaultElementType);
+		// 解析list标签的merge属性
 		target.setMergeEnabled(parseMergeAttribute(collectionEle));
+		// 解析array标签
 		parseCollectionElements(nl, target, bd, defaultElementType);
 		return target;
 	}
 
 	/**
+	 * 解析set标签 <br>
 	 * Parse a set element.
+	 *
+	 * @param collectionEle set标签对象
+	 * @param bd
+	 * @return
 	 */
 	public Set<Object> parseSetElement(Element collectionEle, @Nullable BeanDefinition bd) {
+		// 获取set标签的value-type属性值
 		String defaultElementType = collectionEle.getAttribute(VALUE_TYPE_ATTRIBUTE);
+		// 获取set标签的所有子节点
 		NodeList nl = collectionEle.getChildNodes();
 		ManagedSet<Object> target = new ManagedSet<>(nl.getLength());
 		target.setSource(extractSource(collectionEle));
 		target.setElementTypeName(defaultElementType);
+		// 解析set标签的merge属性值
 		target.setMergeEnabled(parseMergeAttribute(collectionEle));
+		// 解析set标签
 		parseCollectionElements(nl, target, bd, defaultElementType);
 		return target;
 	}
 
+	/**
+	 * 解析集合标签，不包括map类型标签，如array、list和set <br>
+	 *
+	 * @param elementNodes       集合标签子标签对象
+	 * @param target
+	 * @param bd
+	 * @param defaultElementType 集合标签的value-type属性值
+	 */
 	protected void parseCollectionElements(
 			NodeList elementNodes, Collection<Object> target, @Nullable BeanDefinition bd, String defaultElementType) {
 
+		// 遍历集合子标签
 		for (int i = 0; i < elementNodes.getLength(); i++) {
 			Node node = elementNodes.item(i);
+			// 解析集合的子元素标签，但不包括description元素标签
 			if (node instanceof Element && !nodeNameEquals(node, DESCRIPTION_ELEMENT)) {
+				// 因为集合标签（array、list和set）的子标签大多数类似于property和constructor-arg的子标签，所以这里嵌套解析
 				target.add(parsePropertySubElement((Element) node, bd, defaultElementType));
 			}
 		}
@@ -1433,11 +1492,13 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	/**
+	 * 解析集合标签（如array、list、set、map和props标签）的merge属性 <br>
 	 * Parse the merge attribute of a collection element, if any.
 	 */
 	public boolean parseMergeAttribute(Element collectionElement) {
+		// 获取集合标签的merge属性值
 		String value = collectionElement.getAttribute(MERGE_ATTRIBUTE);
-		if (isDefaultValue(value)) {
+		if (isDefaultValue(value)) {    // 配置了默认值则使用默认值否则使用配置的值
 			value = this.defaults.getMerge();
 		}
 		return TRUE_VALUE.equals(value);
@@ -1501,7 +1562,7 @@ public class BeanDefinitionParserDelegate {
 		BeanDefinitionHolder finalDefinition = originalDef;
 
 		// Decorate based on custom attributes first.
-		// 先修饰自定义属性
+		// 修饰自定义属性
 		NamedNodeMap attributes = ele.getAttributes();
 		for (int i = 0; i < attributes.getLength(); i++) {
 			Node node = attributes.item(i);
@@ -1533,11 +1594,14 @@ public class BeanDefinitionParserDelegate {
 	public BeanDefinitionHolder decorateIfRequired(
 			Node node, BeanDefinitionHolder originalDef, @Nullable BeanDefinition containingBd) {
 
-		// 调用node的getNamespaceURI方法获取namespaceUri
+		// 调用node的getNamespaceURI方法获取namespaceUri（自定义标签的命名空间）
 		String namespaceUri = getNamespaceURI(node);
-		if (namespaceUri != null && !isDefaultNamespace(namespaceUri)) {
+		// 自定义标签修饰
+		if (namespaceUri != null && !isDefaultNamespace(namespaceUri)) {	// 通过标签的命名空间来判断该标签是否适用于自定义标签解析的条件
+			// 根据命名空间找到对应处理器
 			NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
 			if (handler != null) {
+				// 使用处理器修饰
 				BeanDefinitionHolder decorated =
 						handler.decorate(node, originalDef, new ParserContext(this.readerContext, this, containingBd));
 				if (decorated != null) {
@@ -1574,6 +1638,7 @@ public class BeanDefinitionParserDelegate {
 
 
 	/**
+	 * 获取提供的节点的名称空间URI，子类可以覆盖{@link Node#getNamespaceURI}方法以提供不同命名空间标识 <br>
 	 * Get the namespace URI for the supplied node.
 	 * <p>The default implementation uses {@link Node#getNamespaceURI}.
 	 * Subclasses may override the default implementation to provide a

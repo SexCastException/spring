@@ -16,6 +16,7 @@
 
 package org.springframework.beans.factory.parsing;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 
@@ -40,13 +41,14 @@ public class ReaderContext {
 
 	/**
 	 * Construct a new {@code ReaderContext}.
-	 * @param resource the XML bean definition resource
+	 *
+	 * @param resource        the XML bean definition resource
 	 * @param problemReporter the problem reporter in use
-	 * @param eventListener the event listener in use
+	 * @param eventListener   the event listener in use
 	 * @param sourceExtractor the source extractor in use
 	 */
 	public ReaderContext(Resource resource, ProblemReporter problemReporter,
-			ReaderEventListener eventListener, SourceExtractor sourceExtractor) {
+						 ReaderEventListener eventListener, SourceExtractor sourceExtractor) {
 
 		this.resource = resource;
 		this.problemReporter = problemReporter;
@@ -159,6 +161,7 @@ public class ReaderContext {
 	}
 
 	/**
+	 * 触发组件注册的事件，所实现的子类中只提供了空实现，想要在注册 {@link BeanDefinition}时添加监听方法可以覆盖此方法 <br>
 	 * Fire an component-registered event.
 	 */
 	public void fireComponentRegistered(ComponentDefinition componentDefinition) {
@@ -166,6 +169,7 @@ public class ReaderContext {
 	}
 
 	/**
+	 * 成功注册alias之后触发的事件 <br>
 	 * Fire an alias-registered event.
 	 */
 	public void fireAliasRegistered(String beanName, String alias, @Nullable Object source) {
@@ -198,6 +202,7 @@ public class ReaderContext {
 
 	/**
 	 * Call the source extractor for the given source object.
+	 *
 	 * @param sourceCandidate the original source object
 	 * @return the source object to store, or {@code null} for none.
 	 * @see #getSourceExtractor()

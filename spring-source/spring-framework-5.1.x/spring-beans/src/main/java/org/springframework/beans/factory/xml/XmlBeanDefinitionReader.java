@@ -498,7 +498,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	}
 
 	/**
-	 * 注册BeanDefinitions <br>
+	 * 注册 {@link org.springframework.beans.factory.config.BeanDefinition} <br>
 	 * Register the bean definitions contained in the given DOM document.
 	 * Called by {@code loadBeanDefinitions}.
 	 * <p>Creates a new instance of the parser class and invokes
