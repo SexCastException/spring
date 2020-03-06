@@ -142,6 +142,7 @@ public abstract class StringUtils {
 	}
 
 	/**
+	 * 检查字符串是否非空并且非空串 <br>
 	 * Check whether the given {@code String} contains actual <em>text</em>.
 	 * <p>More specifically, this method returns {@code true} if the
 	 * {@code String} is not {@code null}, its length is greater than 0,
@@ -906,7 +907,7 @@ public abstract class StringUtils {
 
 	/**
 	 * 将字符集合转为字符数组并返回，如果集合为空，则返回空的字符数组 <br>
-	 *
+	 * <p>
 	 * Copy the given {@link Collection} into a {@code String} array.
 	 * <p>The {@code Collection} must contain {@code String} elements only.
 	 *
@@ -1192,7 +1193,7 @@ public abstract class StringUtils {
 				// 去掉token前后空串
 				token = token.trim();
 			}
-			if (!ignoreEmptyTokens || token.length() > 0) {	// 是否忽略分隔之后的空串
+			if (!ignoreEmptyTokens || token.length() > 0) {    // 是否忽略分隔之后的空串
 				tokens.add(token);
 			}
 		}

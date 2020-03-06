@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:npexception="http://www.npexception.com/schema/user"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.npexception.com/schema/user http://www.npexception.com/schema/user.xsd">
+
+	<npexception:user id="testBean" userName="PYH" email="190842136@qq.com"></npexception:user>
+</beans>
