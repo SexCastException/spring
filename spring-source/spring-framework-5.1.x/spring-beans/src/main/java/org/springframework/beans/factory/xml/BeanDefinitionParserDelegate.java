@@ -1516,23 +1516,27 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	/**
+	 * 解析一个自定义元素(在默认名称空间之外)。<br>
 	 * Parse a custom element (outside of the default namespace).
 	 *
 	 * @param ele          the element to parse
-	 * @param containingBd the containing bean definition (if any)
+	 * @param containingBd the containing bean definition (if any) 父类bean，顶层bean的解析该值为null
 	 * @return the resulting bean definition
 	 */
 	@Nullable
 	public BeanDefinition parseCustomElement(Element ele, @Nullable BeanDefinition containingBd) {
+		// 获取对应的命名空间
 		String namespaceUri = getNamespaceURI(ele);
 		if (namespaceUri == null) {
 			return null;
 		}
+		// 根据对应的命名空间找到对应的NamespaceHandler对象，即spring.handlers配置的对象
 		NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
 		if (handler == null) {
 			error("Unable to locate Spring NamespaceHandler for XML schema namespace [" + namespaceUri + "]", ele);
 			return null;
 		}
+		// 调用自定义的NamespaceHandler解析
 		return handler.parse(ele, new ParserContext(this.readerContext, this, containingBd));
 	}
 
@@ -1597,7 +1601,7 @@ public class BeanDefinitionParserDelegate {
 		// 调用node的getNamespaceURI方法获取namespaceUri（自定义标签的命名空间）
 		String namespaceUri = getNamespaceURI(node);
 		// 自定义标签修饰
-		if (namespaceUri != null && !isDefaultNamespace(namespaceUri)) {	// 通过标签的命名空间来判断该标签是否适用于自定义标签解析的条件
+		if (namespaceUri != null && !isDefaultNamespace(namespaceUri)) {    // 通过标签的命名空间来判断该标签是否适用于自定义标签解析的条件
 			// 根据命名空间找到对应处理器
 			NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
 			if (handler != null) {
@@ -1638,7 +1642,7 @@ public class BeanDefinitionParserDelegate {
 
 
 	/**
-	 * 获取提供的节点的名称空间URI，子类可以覆盖{@link Node#getNamespaceURI}方法以提供不同命名空间标识 <br>
+	 * 获取指定节点所在的命名空间，子类可以覆盖{@link Node#getNamespaceURI}方法以提供不同命名空间标识 <br>
 	 * Get the namespace URI for the supplied node.
 	 * <p>The default implementation uses {@link Node#getNamespaceURI}.
 	 * Subclasses may override the default implementation to provide a

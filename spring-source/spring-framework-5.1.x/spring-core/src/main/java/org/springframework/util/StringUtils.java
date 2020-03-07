@@ -1272,6 +1272,7 @@ public abstract class StringUtils {
 	}
 
 	/**
+	 * 将列表分隔为字符串数组，默认分隔符：“,”
 	 * Convert a comma delimited list (e.g., a row from a CSV file) into an
 	 * array of strings.
 	 *

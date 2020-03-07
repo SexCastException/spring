@@ -8,9 +8,9 @@ import org.springframework.core.io.ClassPathResource;
  * @author pyh
  * @date 2020/3/6 21:14
  */
-public class CustomTagTest {
+public class Main {
 	public static void main(String[] args) {
-		BeanFactory beanFactory = new XmlBeanFactory(new ClassPathResource("customtag.xml"));
+		BeanFactory beanFactory = new XmlBeanFactory(new ClassPathResource("custom-tag.xml"));
 		User bean = (User) beanFactory.getBean("testBean");
 		System.out.println(bean);
 	}

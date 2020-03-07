@@ -4,6 +4,7 @@ import com.huazai.springframework.customtag.User;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
+import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
@@ -25,7 +26,9 @@ public class UserBeanDefinitionParser extends AbstractSingleBeanDefinitionParser
 
 	/**
 	 * 从 {@code element}中解析并提取对应元素，将提取的结果封装到 {@link BeanDefinitionBuilder}对象，
-	 * 待完成所有的bean的解析后统一注册到 {@link BeanFactory}中
+	 * 待完成所有的bean的解析后统一注册到 {@link BeanFactory}中 <br>
+	 * <p>
+	 * 通过 {@link AbstractSingleBeanDefinitionParser#parseInternal(Element, ParserContext)}方法调用来调用此方法 <br>
 	 *
 	 * @param element the XML element being parsed
 	 * @param builder used to define the {@code BeanDefinition}
@@ -41,6 +44,5 @@ public class UserBeanDefinitionParser extends AbstractSingleBeanDefinitionParser
 		if (StringUtils.hasText(email)) {
 			builder.addPropertyValue("email", email);
 		}
-		super.doParse(element, builder);
 	}
 }
