@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="testA" class="com.huazai.springframework.test.cycle.TestA">
+		<constructor-arg index="0" ref="testB"></constructor-arg>
+	</bean>
+
+	<bean id="testB" class="com.huazai.springframework.test.cycle.TestB">
+		<constructor-arg index="0" ref="testC"></constructor-arg>
+	</bean>
+
+	<bean id="testC" class="com.huazai.springframework.test.cycle.TestC">
+		<constructor-arg index="0" ref="testA"></constructor-arg>
+	</bean>
+
+	<!--prototype-->
+
+	<bean id="testA1" class="com.huazai.springframework.test.cycle.TestA" scope="prototype">
+		<property name="b" ref="testB1"></property>
+	</bean>
+
+	<bean id="testB1" class="com.huazai.springframework.test.cycle.TestB" scope="prototype">
+		<property name="c" ref="testC1"></property>
+	</bean>
+
+	<bean id="testC1" class="com.huazai.springframework.test.cycle.TestC" scope="prototype">
+		<property name="a" ref="testA1"></property>
+	</bean>
+
+</beans>
