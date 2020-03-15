@@ -1222,6 +1222,8 @@ public abstract class ClassUtils {
 	}
 
 	/**
+	 * 返回在clazz类对象、clazz接口以及超类中，带有给定名称(带有任何参数类型)的方法的数量。包括非公开的方法。<br>
+	 * <p>
 	 * Return the number of methods with a given name (with any argument types),
 	 * for the given class and/or its superclasses. Includes non-public methods.
 	 *
@@ -1233,16 +1235,20 @@ public abstract class ClassUtils {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		int count = 0;
+		// 获取clazz所有声明的方法，包括非public方法
 		Method[] declaredMethods = clazz.getDeclaredMethods();
 		for (Method method : declaredMethods) {
+			// 只比较方法名称，忽略参数列表
 			if (methodName.equals(method.getName())) {
 				count++;
 			}
 		}
 		Class<?>[] ifcs = clazz.getInterfaces();
+		// 遍历递归统计clazz接口中方法的数量
 		for (Class<?> ifc : ifcs) {
 			count += getMethodCountForName(ifc, methodName);
 		}
+		// 遍历递归统计clazz超类中方法的数量
 		if (clazz.getSuperclass() != null) {
 			count += getMethodCountForName(clazz.getSuperclass(), methodName);
 		}
