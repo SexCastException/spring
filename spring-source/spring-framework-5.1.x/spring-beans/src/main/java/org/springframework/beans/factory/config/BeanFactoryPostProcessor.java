@@ -19,6 +19,11 @@ package org.springframework.beans.factory.config;
 import org.springframework.beans.BeansException;
 
 /**
+ * Spring 工厂后置处理器，spring扩展点之一 <br>
+ * 实现类可以在spring的bean创建之前修改 {@link BeanDefinition}的属性。<br>
+ * spring允许 {@code BeanFactoryPostProcessor}实现类在容器实例化任何其他bean之前读取配置元数据 <br>
+ * <p>
+ * <p>
  * Allows for custom modification of an application context's bean definitions,
  * adapting the bean property values of the context's underlying bean factory.
  *
@@ -38,9 +43,9 @@ import org.springframework.beans.BeansException;
  * {@link BeanPostProcessor} instead.
  *
  * @author Juergen Hoeller
- * @since 06.07.2003
  * @see BeanPostProcessor
  * @see PropertyResourceConfigurer
+ * @since 06.07.2003
  */
 @FunctionalInterface
 public interface BeanFactoryPostProcessor {
@@ -50,6 +55,7 @@ public interface BeanFactoryPostProcessor {
 	 * initialization. All bean definitions will have been loaded, but no beans
 	 * will have been instantiated yet. This allows for overriding or adding
 	 * properties even to eager-initializing beans.
+	 *
 	 * @param beanFactory the bean factory used by the application context
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */

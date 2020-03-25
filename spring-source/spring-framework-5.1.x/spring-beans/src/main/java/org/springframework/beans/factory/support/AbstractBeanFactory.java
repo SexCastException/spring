@@ -315,6 +315,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			加入到objectFactory缓存中，一且下个bean创建时候需要依赖上个bean则直接使用缓存中的ObjectFactory
 		*/
 		// 直接尝试从缓存获取或者从singletonFactories中的objectFactory中获取
+		// 只有singleton bean才需要缓存
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
 			if (logger.isTraceEnabled()) {
@@ -334,6 +335,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
 			/*
+				原型bean不应该在初始化的时候创建
 			    只有在单例情况才会尝试解决循环依赖，原型模式情况下：
 			    如果存在A中有B的属性，B中有A的属性，那么当依赖注人的时候，就会产生当A还未创建完的时候，
 			    因为对于B的创建再次返回创建A，造成循环依赖，也就是下面的情况
@@ -931,9 +933,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// Remove from old position, if any
 		this.beanPostProcessors.remove(beanPostProcessor);
 		// Track whether it is instantiation/destruction aware
+		// 如果注册的bean后置处理器是 InstantiationAwareBeanPostProcessor类型，则做好相应的标志
 		if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
 			this.hasInstantiationAwareBeanPostProcessors = true;
 		}
+		// 如果注册的bean后置处理器是 DestructionAwareBeanPostProcessor，则做好相应的标志
 		if (beanPostProcessor instanceof DestructionAwareBeanPostProcessor) {
 			this.hasDestructionAwareBeanPostProcessors = true;
 		}

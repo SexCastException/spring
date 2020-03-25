@@ -16,23 +16,17 @@
 
 package org.springframework.context.support;
 
-import java.security.AccessControlContext;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.Aware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.EmbeddedValueResolver;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.EmbeddedValueResolverAware;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.MessageSourceAware;
-import org.springframework.context.ResourceLoaderAware;
+import org.springframework.context.*;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
+
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  * {@link org.springframework.beans.factory.config.BeanPostProcessor}
@@ -49,7 +43,6 @@ import org.springframework.util.StringValueResolver;
  * @author Juergen Hoeller
  * @author Costin Leau
  * @author Chris Beams
- * @since 10.10.2003
  * @see org.springframework.context.EnvironmentAware
  * @see org.springframework.context.EmbeddedValueResolverAware
  * @see org.springframework.context.ResourceLoaderAware
@@ -57,6 +50,7 @@ import org.springframework.util.StringValueResolver;
  * @see org.springframework.context.MessageSourceAware
  * @see org.springframework.context.ApplicationContextAware
  * @see org.springframework.context.support.AbstractApplicationContext#refresh()
+ * @since 10.10.2003
  */
 class ApplicationContextAwareProcessor implements BeanPostProcessor {
 
@@ -91,8 +85,7 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 				invokeAwareInterfaces(bean);
 				return null;
 			}, acc);
-		}
-		else {
+		} else {
 			invokeAwareInterfaces(bean);
 		}
 
@@ -101,21 +94,27 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 
 	private void invokeAwareInterfaces(Object bean) {
 		if (bean instanceof Aware) {
+			// 实现 EnvironmentAware 接口可以获取到 Environment 对象
 			if (bean instanceof EnvironmentAware) {
 				((EnvironmentAware) bean).setEnvironment(this.applicationContext.getEnvironment());
 			}
+			// 实现 EnvironmentAware 接口可以获取到 StringValueResolver 对象
 			if (bean instanceof EmbeddedValueResolverAware) {
 				((EmbeddedValueResolverAware) bean).setEmbeddedValueResolver(this.embeddedValueResolver);
 			}
+			// 实现 EnvironmentAware 接口可以获取到 ResourceLoader 对象
 			if (bean instanceof ResourceLoaderAware) {
 				((ResourceLoaderAware) bean).setResourceLoader(this.applicationContext);
 			}
+			// 实现 EnvironmentAware 接口可以获取到 ApplicationEventPublisher 对象
 			if (bean instanceof ApplicationEventPublisherAware) {
 				((ApplicationEventPublisherAware) bean).setApplicationEventPublisher(this.applicationContext);
 			}
+			// 实现 EnvironmentAware 接口可以获取到 MessageSource 对象
 			if (bean instanceof MessageSourceAware) {
 				((MessageSourceAware) bean).setMessageSource(this.applicationContext);
 			}
+			// 实现 EnvironmentAware 接口可以获取到 ApplicationContext 对象
 			if (bean instanceof ApplicationContextAware) {
 				((ApplicationContextAware) bean).setApplicationContext(this.applicationContext);
 			}

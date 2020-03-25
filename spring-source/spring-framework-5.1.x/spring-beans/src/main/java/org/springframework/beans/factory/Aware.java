@@ -17,6 +17,10 @@
 package org.springframework.beans.factory;
 
 /**
+ * 一个标记超接口，指示bean有资格通过回调样式的方法由特定框架对象的Spring容器的组件。
+ * 实际的方法签名是由各个子接口决定的，但是通常应该只包含一个接受单个参数的空洞返回方法。
+ * Example：开发者实现 {@code ApplicationContextAware}接口可以拿到 {@code ApplicationContext} 对象
+ * <p>
  * A marker superinterface indicating that a bean is eligible to be notified by the
  * Spring container of a particular framework object through a callback-style method.
  * The actual method signature is determined by individual subinterfaces but should

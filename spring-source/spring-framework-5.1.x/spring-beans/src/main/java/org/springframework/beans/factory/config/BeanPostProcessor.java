@@ -17,9 +17,17 @@
 package org.springframework.beans.factory.config;
 
 import org.springframework.beans.BeansException;
+import org.springframework.core.PriorityOrdered;
 import org.springframework.lang.Nullable;
 
 /**
+ * Spring扩展点之一，实现此接口，开发者可以插手bean实例化过程，从而减轻了 {@code BeanFactory}的负担；<br>
+ * 实现此接口的实现类将会形成一个列表，然后从列表中依次执行（bean可以通过实现 {@link PriorityOrdered}接口改变bean实例化顺序）
+ * 每个 后置处理器的逻辑功能 <br>
+ * <p>
+ * Example：AOP就是在bean实例后期间将逻辑织入bean实例中的，也正是通过 {@code BeanPostProcessor}将AOP和IOC建立起了联系 <br>
+ * <p>
+ * <p>
  * Factory hook that allows for custom modification of new bean instances,
  * e.g. checking for marker interfaces or wrapping them with proxies.
  *
@@ -34,21 +42,24 @@ import org.springframework.lang.Nullable;
  * implement {@link #postProcessAfterInitialization}.
  *
  * @author Juergen Hoeller
- * @since 10.10.2003
  * @see InstantiationAwareBeanPostProcessor
  * @see DestructionAwareBeanPostProcessor
  * @see ConfigurableBeanFactory#addBeanPostProcessor
  * @see BeanFactoryPostProcessor
+ * @since 10.10.2003
  */
 public interface BeanPostProcessor {
 
 	/**
+	 * 初始化之前的后处理
+	 * <p>
 	 * Apply this BeanPostProcessor to the given new bean instance <i>before</i> any bean
 	 * initialization callbacks (like InitializingBean's {@code afterPropertiesSet}
 	 * or a custom init-method). The bean will already be populated with property values.
 	 * The returned bean instance may be a wrapper around the original.
 	 * <p>The default implementation returns the given {@code bean} as-is.
-	 * @param bean the new bean instance
+	 *
+	 * @param bean     the new bean instance
 	 * @param beanName the name of the bean
 	 * @return the bean instance to use, either the original or a wrapped one;
 	 * if {@code null}, no subsequent BeanPostProcessors will be invoked
@@ -61,6 +72,8 @@ public interface BeanPostProcessor {
 	}
 
 	/**
+	 * 初始化后的后处理
+	 * <p>
 	 * Apply this BeanPostProcessor to the given new bean instance <i>after</i> any bean
 	 * initialization callbacks (like InitializingBean's {@code afterPropertiesSet}
 	 * or a custom init-method). The bean will already be populated with property values.
@@ -73,7 +86,8 @@ public interface BeanPostProcessor {
 	 * {@link InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation} method,
 	 * in contrast to all other BeanPostProcessor callbacks.
 	 * <p>The default implementation returns the given {@code bean} as-is.
-	 * @param bean the new bean instance
+	 *
+	 * @param bean     the new bean instance
 	 * @param beanName the name of the bean
 	 * @return the bean instance to use, either the original or a wrapped one;
 	 * if {@code null}, no subsequent BeanPostProcessors will be invoked
