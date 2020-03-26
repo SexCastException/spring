@@ -82,6 +82,12 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	public AnnotationConfigApplicationContext(DefaultListableBeanFactory beanFactory) {
 		super(beanFactory);
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+		/*
+			用来扫描包或者类，从而生成扫描到bean的BeanDefinition
+			但是实际上ComponentScan扫描包不是用此对象，而是spring在解析扫描包操作中新创建了一个
+			ClassPathBeanDefinitionScanner对象来扫描包
+			该成员变量是可以让开发者在外部手动调用scan方法来通过代码方式来扫描包
+		 */
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 

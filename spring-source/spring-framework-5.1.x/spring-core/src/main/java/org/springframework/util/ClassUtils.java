@@ -583,6 +583,7 @@ public abstract class ClassUtils {
 	}
 
 	/**
+	 * 将指定的字符串的“.”替换为“/”
 	 * Convert a "."-based fully qualified class name to a "/"-based resource path.
 	 *
 	 * @param className the fully qualified class name
