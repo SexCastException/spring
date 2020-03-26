@@ -9,7 +9,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * @date 2020/3/22 12:33
  */
 @Configurable
-@ComponentScan("com.huazai.spring.learning.aop")
+@ComponentScan("com.huazai.spring.learning")
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public class AppConfig {
 }
