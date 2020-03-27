@@ -199,6 +199,8 @@ abstract class ConfigurationClassUtils {
 	}
 
 	/**
+	 * 判断对象的 configurationClass 属性值是否等于 full
+	 *
 	 * Determine whether the given bean definition indicates a full {@code @Configuration}
 	 * class, through checking {@link #checkConfigurationClassCandidate}'s metadata marker.
 	 */
@@ -207,6 +209,8 @@ abstract class ConfigurationClassUtils {
 	}
 
 	/**
+	 * 判断对象的 configurationClass 属性值是否等于 lite
+	 *
 	 * Determine whether the given bean definition indicates a lite {@code @Configuration}
 	 * class, through checking {@link #checkConfigurationClassCandidate}'s metadata marker.
 	 */

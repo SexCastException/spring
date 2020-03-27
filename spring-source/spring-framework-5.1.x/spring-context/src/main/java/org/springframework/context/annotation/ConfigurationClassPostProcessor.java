@@ -247,6 +247,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 * {@link Configuration} classes.
 	 */
 	public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
+		// 存放加了@Component注解的bean定义
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
 		// 获取容器中注册的所有beanName
 		String[] candidateNames = registry.getBeanDefinitionNames();
@@ -260,7 +261,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				if (logger.isDebugEnabled()) {
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
 				}
-				// 判断该beanDef对应的bean是否配置了@Configuration、@Component、@Import等注解
+				// 判断该beanDef对应的bean是否配置了@Configuration、@Component、@Import、@Service等注解
 			} else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
 				configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));
 			}
@@ -305,7 +306,10 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				this.metadataReaderFactory, this.problemReporter, this.environment,
 				this.resourceLoader, this.componentScanBeanNameGenerator, registry);
 
-		// 用于将之前的configCandidates中的元素进行去重，因为有可能有多个配置类重复了，比如多个bean加了@Configuration注解
+		/*
+			将configCandidates的 List 类型转换为 Set 类型对象，目的将configCandidates中的元素进行去重，
+			因为有可能有多个配置类重复了，或者手动注册重复对同一个bean注册多次，则会生成多个该bean的BeanDefinition
+		*/
 		Set<BeanDefinitionHolder> candidates = new LinkedHashSet<>(configCandidates);
 		// 用于判断是否处理过
 		Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());

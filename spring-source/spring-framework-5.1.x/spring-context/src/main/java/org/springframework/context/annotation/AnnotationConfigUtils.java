@@ -171,7 +171,7 @@ public abstract class AnnotationConfigUtils {
 
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 
-		// ApplicationContext初始化时默认自动向 BeanDefinition的beanDefinitionMap中注册对象
+		// ApplicationContext初始化时默认自动向 BeanDefinition的beanDefinitionMap中注册以下几个bean定义
 		// 如果已经注册过则不会再注册
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
