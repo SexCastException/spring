@@ -305,7 +305,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * @return a corresponding Set of autodetected bean definitions
 	 */
 	public Set<BeanDefinition> findCandidateComponents(String basePackage) {
-		// 加了 spring-context-indexer依赖，会加快扫描的速度，这样才会进入此方法
+		// 加了 spring-context-indexer依赖，会加快扫描的速度，这样才会进入此方法，底层使用ASM实现的
 		if (this.componentsIndex != null && indexSupportsIncludeFilters()) {
 			return addCandidateComponentsFromIndex(this.componentsIndex, basePackage);
 		} else {
@@ -415,7 +415,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			// 将包名替换转换为匹配该包名下的class文件的正则表达式
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + '/' + this.resourcePattern;
-			// 获取该正则表达式下的class的资源文件
+			// 获取该正则表达式下的class的资源文件，底层也是使用了ASM技术
 			Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();

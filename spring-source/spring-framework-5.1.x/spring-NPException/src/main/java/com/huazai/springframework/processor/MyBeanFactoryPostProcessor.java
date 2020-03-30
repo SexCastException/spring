@@ -1,4 +1,4 @@
-package com.huazai.springframework.test;
+package com.huazai.springframework.processor;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;

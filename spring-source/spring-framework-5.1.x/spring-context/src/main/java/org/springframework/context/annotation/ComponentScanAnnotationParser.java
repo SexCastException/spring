@@ -65,11 +65,13 @@ class ComponentScanAnnotationParser {
 
 
 	public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, final String declaringClass) {
-		// 实例化类路径下bean定义扫描器
+		// 实例化类路径下bean定义扫描器，此处的扫描器是新创建出来的，
+		// 并不是使用 AnnotationConfigApplicationContext.scanner 的扫描器
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(this.registry,
 				componentScan.getBoolean("useDefaultFilters"), this.environment, this.resourceLoader);
 
-		// 以下代码为解析@ComponentScan注解，并将各种配置值赋值到ClassPathBeanDefinitionScanner对象
+		/*以下代码为解析@ComponentScan注解，并将各种配置值赋值到ClassPathBeanDefinitionScanner对象 */
+
 		Class<? extends BeanNameGenerator> generatorClass = componentScan.getClass("nameGenerator");
 		boolean useInheritedGenerator = (BeanNameGenerator.class == generatorClass);
 		scanner.setBeanNameGenerator(useInheritedGenerator ? this.beanNameGenerator :
@@ -96,6 +98,7 @@ class ComponentScanAnnotationParser {
 			}
 		}
 
+		// 默认懒加载
 		boolean lazyInit = componentScan.getBoolean("lazyInit");
 		if (lazyInit) {
 			scanner.getBeanDefinitionDefaults().setLazyInit(true);

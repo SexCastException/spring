@@ -37,12 +37,15 @@ import org.springframework.core.io.ResourceLoader;
 abstract class ParserStrategyUtils {
 
 	/**
+	 * 如果 parserStrategyBean实现了 {@link Aware}接口中的各种子接口，则把对应的对象给实现类 <br>
+	 * See {@code ApplicationContextAwareProcessor#invokeAwareInterfaces(Object)} <br>
+	 * <p>
 	 * Invoke {@link BeanClassLoaderAware}, {@link BeanFactoryAware},
 	 * {@link EnvironmentAware}, and {@link ResourceLoaderAware} contracts
 	 * if implemented by the given object.
 	 */
 	public static void invokeAwareMethods(Object parserStrategyBean, Environment environment,
-			ResourceLoader resourceLoader, BeanDefinitionRegistry registry) {
+										  ResourceLoader resourceLoader, BeanDefinitionRegistry registry) {
 
 		if (parserStrategyBean instanceof Aware) {
 			if (parserStrategyBean instanceof BeanClassLoaderAware) {

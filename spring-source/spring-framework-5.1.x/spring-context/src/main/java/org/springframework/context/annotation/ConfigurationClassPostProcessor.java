@@ -243,6 +243,8 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	}
 
 	/**
+	 * 处理注解 {@link BeanDefinition}，即加了 {@code @Configuration}、{@code @Component}、{@code @Import}等注解 <br>
+	 * <p>
 	 * Build and validate a configuration model based on the registry of
 	 * {@link Configuration} classes.
 	 */
@@ -326,6 +328,11 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 						registry, this.sourceExtractor, this.resourceLoader, this.environment,
 						this.importBeanNameGenerator, parser.getImportRegistry());
 			}
+			/*
+			   扫描出来的bean当中可能包含了特殊类，比如ImportBeanDefinitionRegistrar，那么也在这个方法中处理，
+			   但是并不包含在 configClasses 当中，configClasses中主要包含的是importSelector，因为
+			   ImportBeanDefinitionRegistrar 在扫描出来的时候已经被添加到了一个list里面去了
+			*/
 			this.reader.loadBeanDefinitions(configClasses);
 			alreadyParsed.addAll(configClasses);
 
@@ -372,8 +379,11 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 */
 	public void enhanceConfigurationClasses(ConfigurableListableBeanFactory beanFactory) {
 		Map<String, AbstractBeanDefinition> configBeanDefs = new LinkedHashMap<>();
+		// 遍历所有bean定义的名称
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
+			// 通过beanName获取对应的BeanDefinition对象
 			BeanDefinition beanDef = beanFactory.getBeanDefinition(beanName);
+			// 判断bean是否是全配置类，即加了@Configuration注解的类，则该类对应的bean定义上configurationClass属性值为full
 			if (ConfigurationClassUtils.isFullConfigurationClass(beanDef)) {
 				if (!(beanDef instanceof AbstractBeanDefinition)) {
 					throw new BeanDefinitionStoreException("Cannot enhance @Configuration bean definition '" +
@@ -384,23 +394,27 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 							"is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor " +
 							"return type: Consider declaring such methods as 'static'.");
 				}
+				// 将全配置类添加到 configBeanDefs
 				configBeanDefs.put(beanName, (AbstractBeanDefinition) beanDef);
 			}
 		}
-		if (configBeanDefs.isEmpty()) {
+		if (configBeanDefs.isEmpty()) {    // 如果不是全配置类则直接结束方法
 			// nothing to enhance -> return immediately
 			return;
 		}
 
+		// 实例化全配置类增强器
 		ConfigurationClassEnhancer enhancer = new ConfigurationClassEnhancer();
 		for (Map.Entry<String, AbstractBeanDefinition> entry : configBeanDefs.entrySet()) {
 			AbstractBeanDefinition beanDef = entry.getValue();
 			// If a @Configuration class gets proxied, always proxy the target class
+			// 将 beanDef 的 preserveTargetClass 属性设为true
 			beanDef.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);
 			try {
 				// Set enhanced subclass of the user-specified bean class
 				Class<?> configClass = beanDef.resolveBeanClass(this.beanClassLoader);
 				if (configClass != null) {
+					// 完成对全注解类的cglib的代理
 					Class<?> enhancedClass = enhancer.enhance(configClass, this.beanClassLoader);
 					if (configClass != enhancedClass) {
 						if (logger.isTraceEnabled()) {

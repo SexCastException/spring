@@ -1,4 +1,4 @@
-package com.huazai.springframework.test;
+package com.huazai.springframework.processor;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Configuration;
  * @date 2020/3/25 22:33
  */
 @Configuration
-@ComponentScan("com.huazai.springframework.test")
+@ComponentScan("com.huazai.springframework.processor")
 public class AppConfig {
 }

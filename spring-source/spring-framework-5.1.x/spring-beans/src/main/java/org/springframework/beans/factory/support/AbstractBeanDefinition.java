@@ -442,6 +442,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	}
 
 	/**
+	 * 为当前的 BeanDefinition 设置默认值
 	 * Apply the provided default values to this bean.
 	 *
 	 * @param defaults the default settings to apply
@@ -1207,7 +1208,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * 来最终确认当前调用的到底是哪个函数。但是，Spring 将一部分匹配工作在这里完成了，如果当前类中的方法只有一个，
 	 * 那么就设置重载该方法没有被重载，这样在后续调用的时候便可以直接使用找到的方法，而不需要进行方法的参数匹配验证了，
 	 * 而且还可以提前对方法存在性进行验证。<br>
-	 *
+	 * <p>
 	 * Validate and prepare the given method override.
 	 * Checks for existence of a method with the specified name,
 	 * marking it as not overloaded if none found.

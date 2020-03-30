@@ -201,7 +201,7 @@ class ConfigurationClassParser {
 
 
 		ConfigurationClass existingClass = this.configurationClasses.get(configClass);
-		if (existingClass != null) {    // 处理 Imported 的情况
+		if (existingClass != null) {    // 处理 Imported 的情况，即当前注解类没有被其他类import的情况
 			if (configClass.isImported()) {
 				if (existingClass.isImported()) {
 					existingClass.mergeImportedBy(configClass);
@@ -268,11 +268,12 @@ class ConfigurationClassParser {
 				!this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
-				// 翻译：配置类由@ComponentScan注释——>立即执行扫描
-				// 执行包扫描操作
+				// 翻译：配置类由@ComponentScan注释（包括@Service、@Repository等）——>立即执行扫描
+				// 扫描普通类
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
 						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
 				// Check the set of scanned definitions for any further config classes and parse recursively if needed
+				// 判断扫描出来的类是否还有 Configuration
 				for (BeanDefinitionHolder holder : scannedBeanDefinitions) {
 					BeanDefinition bdCand = holder.getBeanDefinition().getOriginatingBeanDefinition();
 					if (bdCand == null) {
@@ -522,6 +523,15 @@ class ConfigurationClassParser {
 		}
 	}
 
+	/**
+	 * 处理加了 {@link Import}注解的bean ，可以处理以下三种类型：<br>
+	 * 普通类，{@link ImportSelector} 实现类和 {@link ImportBeanDefinitionRegistrar} <br>
+	 *
+	 * @param configClass
+	 * @param currentSourceClass
+	 * @param importCandidates
+	 * @param checkForCircularImports 是否检查{@code @Import}的value中指定对象嵌套存在 {@code @Import}注解的情况
+	 */
 	private void processImports(ConfigurationClass configClass, SourceClass currentSourceClass,
 								Collection<SourceClass> importCandidates, boolean checkForCircularImports) {
 
@@ -535,19 +545,27 @@ class ConfigurationClassParser {
 			this.importStack.push(configClass);
 			try {
 				for (SourceClass candidate : importCandidates) {
+					// 处理@Import注解value值为 ImportSelector 类型的情况
 					if (candidate.isAssignable(ImportSelector.class)) {
 						// Candidate class is an ImportSelector -> delegate to it to determine imports
+						// 获取ImportSelector实现类类对象
 						Class<?> candidateClass = candidate.loadClass();
+						// 通过反射实例化ImportSelector实现类型对象
 						ImportSelector selector = BeanUtils.instantiateClass(candidateClass, ImportSelector.class);
 						ParserStrategyUtils.invokeAwareMethods(
 								selector, this.environment, this.resourceLoader, this.registry);
+						// 如果selector 同时实现了 ImportSelector 的子接口，即DeferredImportSelector，则做相应处理
 						if (selector instanceof DeferredImportSelector) {
 							this.deferredImportSelectorHandler.handle(configClass, (DeferredImportSelector) selector);
 						} else {
+							// 回调ImportSelector实现类的selectImports方法得到需要导入类的字符串数组
 							String[] importClassNames = selector.selectImports(currentSourceClass.getMetadata());
+							// 将上一行代码的返回值转换为SourceClass类型集合对象
 							Collection<SourceClass> importSourceClasses = asSourceClasses(importClassNames);
+							// 将封装返回值importClassNames的SourceClass集合类型的对象，递归处理@Import注解，如果存在的话
 							processImports(configClass, currentSourceClass, importSourceClasses, false);
 						}
+						// 处理@Import注解value值为 ImportBeanDefinitionRegistrar 类型的情况
 					} else if (candidate.isAssignable(ImportBeanDefinitionRegistrar.class)) {
 						// Candidate class is an ImportBeanDefinitionRegistrar ->
 						// delegate to it to register additional bean definitions
@@ -560,8 +578,19 @@ class ConfigurationClassParser {
 					} else {
 						// Candidate class not an ImportSelector or ImportBeanDefinitionRegistrar ->
 						// process it as an @Configuration class
+						/*
+						    翻译：候选类不是ImportSelector或ImportBeanDefinitionRegistrar时，
+							则将其作为@Configuration类处理
+						*/
+						/*
+						  加入到 importStack 后调用 processConfigurationClass 进行处理，processConfigurationClass 里面
+						  主要就是把类放到 configurationClasses，configurationClasses 是一个集合，会在后面解析成beanDefinition
+						  继而注册，可以看到普通类在扫描出来的时候就被注册了，如果是 ImportSelector，会放到 configurationClasses
+						  后面进行出来注册。
+						*/
 						this.importStack.registerImport(
 								currentSourceClass.getMetadata(), candidate.getMetadata().getClassName());
+						// 处理普通注解类
 						processConfigurationClass(candidate.asConfigClass(configClass));
 					}
 				}

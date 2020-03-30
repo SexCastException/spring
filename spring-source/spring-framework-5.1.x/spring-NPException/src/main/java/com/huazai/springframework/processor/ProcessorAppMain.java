@@ -1,4 +1,4 @@
-package com.huazai.springframework.test;
+package com.huazai.springframework.processor;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -6,7 +6,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * @author pyh
  * @date 2020/3/25 22:34
  */
-public class AppMain {
+public class ProcessorAppMain {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(AppConfig.class);
