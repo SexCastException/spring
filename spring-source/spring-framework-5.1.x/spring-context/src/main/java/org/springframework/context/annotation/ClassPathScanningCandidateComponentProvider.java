@@ -415,7 +415,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			// 将包名替换转换为匹配该包名下的class文件的正则表达式
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + '/' + this.resourcePattern;
-			// 获取该正则表达式下的class的资源文件，底层也是使用了ASM技术
+			// 获取该正则表达式下的class的资源文件
 			Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();

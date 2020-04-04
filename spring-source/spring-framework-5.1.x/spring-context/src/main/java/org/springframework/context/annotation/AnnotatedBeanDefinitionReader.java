@@ -36,6 +36,8 @@ import java.util.function.Supplier;
 
 /**
  * Convenient adapter for programmatic registration of bean classes.
+ * <p>
+ * 注解方式配置 {@link BeanDefinition}的读取器 <br>
  *
  * <p>This is an alternative to {@link ClassPathBeanDefinitionScanner}, applying
  * the same resolution of annotations but for explicitly registered classes only.
@@ -88,6 +90,7 @@ public class AnnotatedBeanDefinitionReader {
 		Assert.notNull(environment, "Environment must not be null");
 		this.registry = registry;
 		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);
+		// 注册后置处理器
 		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 	}
 

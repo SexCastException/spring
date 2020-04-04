@@ -442,7 +442,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	}
 
 	/**
-	 * 为当前的 BeanDefinition 设置默认值
+	 * 为指定的 BeanDefinition 设置默认值
 	 * Apply the provided default values to this bean.
 	 *
 	 * @param defaults the default settings to apply

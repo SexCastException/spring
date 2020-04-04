@@ -1,5 +1,9 @@
 package com.huazai.springframework.processor;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
@@ -12,6 +16,12 @@ public class ProcessorAppMain {
 		applicationContext.register(AppConfig.class);
 		applicationContext.addBeanFactoryPostProcessor(new MyBeanFactoryPostProcessor());
 		applicationContext.addBeanFactoryPostProcessor(new CityDao());
+		/*applicationContext.setBeanNameGenerator(new BeanNameGenerator() {
+			@Override
+			public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
+				return definition.getBeanClassName()+"1";
+			}
+		});*/
 		applicationContext.refresh();
 		CityDao cityDao = (CityDao) applicationContext.getBean("cityDao");
 		cityDao.query();

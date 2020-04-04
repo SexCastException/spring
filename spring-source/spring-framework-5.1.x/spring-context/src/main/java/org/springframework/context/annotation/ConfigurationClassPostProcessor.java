@@ -45,6 +45,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -53,6 +54,8 @@ import java.util.*;
 import static org.springframework.context.annotation.AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR;
 
 /**
+ * 配置类后置处理器，即加了 {@link Configuration}、{@link Component}、{@link Import}注解的类
+ * <p>
  * {@link BeanFactoryPostProcessor} used for bootstrapping processing of
  * {@link Configuration @Configuration} classes.
  *
@@ -104,13 +107,23 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 	private boolean localBeanNameGeneratorSet = false;
 
-	/* Using short class names as default bean names */
+	/**
+	 * 使用简短的类名作为缺省bean名，即类名首字母小写的字符串 <br>
+	 * <p>
+	 * Using short class names as default bean names
+	 */
 	private BeanNameGenerator componentScanBeanNameGenerator = new AnnotationBeanNameGenerator();
 
-	/* Using fully qualified class names as default bean names */
+	/**
+	 * beanName生成器。<br>
+	 * 重写了buildDefaultBeanName()方法，此处使用完全限定的类名作为缺省bean名 <br>
+	 * <p>
+	 * Using fully qualified class names as default bean names
+	 */
 	private BeanNameGenerator importBeanNameGenerator = new AnnotationBeanNameGenerator() {
 		@Override
 		protected String buildDefaultBeanName(BeanDefinition definition) {
+			// 获取bean的类名，即完全限定名
 			String beanClassName = definition.getBeanClassName();
 			Assert.state(beanClassName != null, "No bean class name set");
 			return beanClassName;
@@ -243,13 +256,16 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	}
 
 	/**
-	 * 处理注解 {@link BeanDefinition}，即加了 {@code @Configuration}、{@code @Component}、{@code @Import}等注解 <br>
+	 * 处理注解配置类 {@link BeanDefinition}，
+	 * 即加了 {@code @Configuration}、{@code @Component}、{@code @Import}等注解 <br>
+	 * <p>
+	 * 配置了{@code @Configuration}的bean定义将标志为full，其他注解将标志为lite <br>
 	 * <p>
 	 * Build and validate a configuration model based on the registry of
 	 * {@link Configuration} classes.
 	 */
 	public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
-		// 存放加了@Component注解的bean定义
+		// 存放候选配置类的bean定义
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
 		// 获取容器中注册的所有beanName
 		String[] candidateNames = registry.getBeanDefinitionNames();
@@ -270,13 +286,14 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		}
 
 		// Return immediately if no @Configuration classes were found
-		// 翻译：如果没有找到@Configuration类（其实还包括@Component、@Import注解，具体参考上述代码），则立即返回
+		// 翻译：如果没有找候选注解类bean定义（即加了@Configuration类、@Component、@Import注解等，具体参考上述代码），则立即返回
 		if (configCandidates.isEmpty()) {
 			return;
 		}
 
 		// Sort by previously determined @Order value, if applicable
 		// 获取bean上的@Order注解排序beanDefinition，以便后续根据该顺序进行解析
+		// 该order值在 checkConfigurationClassCandidate() 方法中被解析赋值
 		configCandidates.sort((bd1, bd2) -> {
 			int i1 = ConfigurationClassUtils.getOrder(bd1.getBeanDefinition());
 			int i2 = ConfigurationClassUtils.getOrder(bd2.getBeanDefinition());
@@ -288,10 +305,10 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		if (registry instanceof SingletonBeanRegistry) {
 			sbr = (SingletonBeanRegistry) registry;
 			if (!this.localBeanNameGeneratorSet) {
-				// 获取beanName生成器，
+				// 获取用户设置的beanName生成器，
 				BeanNameGenerator generator = (BeanNameGenerator) sbr.getSingleton(CONFIGURATION_BEAN_NAME_GENERATOR);
 				if (generator != null) {
-					// 更新成员属性
+					// 如果用户配置了beanName生成器（即通过setBeanNameGenerator方法设置），则覆盖spring内置的beanName生成器
 					this.componentScanBeanNameGenerator = generator;
 					this.importBeanNameGenerator = generator;
 				}
@@ -303,7 +320,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		}
 
 		// Parse each @Configuration class
-		// 实例化ConfigurationClassParser对象，该对象可以解析每个加了@Configuration注解的类
+		// 实例化ConfigurationClassParser对象，该对象可以解析每个候选配置类
 		ConfigurationClassParser parser = new ConfigurationClassParser(
 				this.metadataReaderFactory, this.problemReporter, this.environment,
 				this.resourceLoader, this.componentScanBeanNameGenerator, registry);

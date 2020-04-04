@@ -63,7 +63,13 @@ class ComponentScanAnnotationParser {
 		this.registry = registry;
 	}
 
-
+	/**
+	 * 扫描bean，并注册 <br>
+	 *
+	 * @param componentScan
+	 * @param declaringClass
+	 * @return
+	 */
 	public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, final String declaringClass) {
 		// 实例化类路径下bean定义扫描器，此处的扫描器是新创建出来的，
 		// 并不是使用 AnnotationConfigApplicationContext.scanner 的扫描器

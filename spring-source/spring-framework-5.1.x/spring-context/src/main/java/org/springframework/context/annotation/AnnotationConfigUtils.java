@@ -169,6 +169,7 @@ public abstract class AnnotationConfigUtils {
 			}
 		}
 
+		// 保存封装 bean定义的BeanDefinitionHolder对象，这些bean定义注册早于用户bean定义的注册
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 
 		// ApplicationContext初始化时默认自动向 BeanDefinition的beanDefinitionMap中注册以下几个bean定义
@@ -176,6 +177,7 @@ public abstract class AnnotationConfigUtils {
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);
+			// 注册beanDefinition
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
@@ -234,6 +236,7 @@ public abstract class AnnotationConfigUtils {
 	private static BeanDefinitionHolder registerPostProcessor(
 			BeanDefinitionRegistry registry, RootBeanDefinition definition, String beanName) {
 
+		// 标志该beanDefinition为spring内部使用
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		registry.registerBeanDefinition(beanName, definition);
 		return new BeanDefinitionHolder(definition, beanName);

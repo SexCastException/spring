@@ -63,6 +63,8 @@ import java.net.UnknownHostException;
 import java.util.*;
 
 /**
+ * {@link ConfigurationClassPostProcessor}解析器 <br>
+ * <p>
  * Parses a {@link Configuration} class definition, populating a collection of
  * {@link ConfigurationClass} objects (parsing a single Configuration class may result in
  * any number of ConfigurationClass objects because one Configuration class may import
@@ -139,7 +141,7 @@ class ConfigurationClassParser {
 
 
 	public void parse(Set<BeanDefinitionHolder> configCandidates) {
-		// 根据每个BeanDefinition 的类型做不同的解析工作，本质上都是调用processConfigurationClass()方法
+		// 根据每个配置类的BeanDefinition 的类型做不同的解析工作，本质上都是调用processConfigurationClass()方法
 		for (BeanDefinitionHolder holder : configCandidates) {
 			BeanDefinition bd = holder.getBeanDefinition();
 			try {
@@ -242,7 +244,7 @@ class ConfigurationClassParser {
 
 		if (configClass.getMetadata().isAnnotated(Component.class.getName())) {
 			// Recursively process any member (nested) classes first
-			// 翻译：递归调用任何内部类
+			// 翻译：递归调用任何内部类（配置类）
 			processMemberClasses(configClass, sourceClass);
 		}
 
@@ -269,16 +271,16 @@ class ConfigurationClassParser {
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
 				// 翻译：配置类由@ComponentScan注释（包括@Service、@Repository等）——>立即执行扫描
-				// 扫描普通类
+				// 扫描bean，并注册
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
 						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
 				// Check the set of scanned definitions for any further config classes and parse recursively if needed
-				// 判断扫描出来的类是否还有 Configuration
 				for (BeanDefinitionHolder holder : scannedBeanDefinitions) {
 					BeanDefinition bdCand = holder.getBeanDefinition().getOriginatingBeanDefinition();
 					if (bdCand == null) {
 						bdCand = holder.getBeanDefinition();
 					}
+					// 判断扫描出来的类是否还有配置类，即configurationClass属性值为full或lite的bean定义
 					if (ConfigurationClassUtils.checkConfigurationClassCandidate(bdCand, this.metadataReaderFactory)) {
 						parse(bdCand.getBeanClassName(), holder.getBeanName());
 					}

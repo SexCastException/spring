@@ -972,6 +972,8 @@ public abstract class ClassUtils {
 	}
 
 	/**
+	 * 获取没有限定包名的类名，即类名的简短名字 <br>
+	 * <p>
 	 * Get the class name without the qualified package name.
 	 *
 	 * @param className the className to get the short name for
@@ -980,11 +982,13 @@ public abstract class ClassUtils {
 	 */
 	public static String getShortName(String className) {
 		Assert.hasLength(className, "Class name must not be empty");
+
 		int lastDotIndex = className.lastIndexOf(PACKAGE_SEPARATOR);
 		int nameEndIndex = className.indexOf(CGLIB_CLASS_SEPARATOR);
 		if (nameEndIndex == -1) {
 			nameEndIndex = className.length();
 		}
+		// 截取包名和cglib代理类名的分隔符作为beanName
 		String shortName = className.substring(lastDotIndex + 1, nameEndIndex);
 		shortName = shortName.replace(INNER_CLASS_SEPARATOR, PACKAGE_SEPARATOR);
 		return shortName;
