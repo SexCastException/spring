@@ -12,5 +12,11 @@ public class ImportAppMain {
 		UserDao userDao = applicationContext.getBean(UserDao.class);
 //		userDao = (UserDao) applicationContext.getBean("com.huazai.springframework.imports.UserDao");
 		userDao.queryUser();
+
+		ParentBean parentBean = (ParentBean) applicationContext.getBean("parentBean");
+		System.out.println(parentBean.getName());
+
+		ChildBean childBean = (ChildBean) applicationContext.getBean("childBean");
+		System.out.println(childBean);
 	}
 }

@@ -480,7 +480,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// Prepare method overrides.
 		try {
-			// 验证及准备覆盖的方法
+			// 验证及准备覆盖的方法（即lookup-method方法和replace-method方法）
 			mbdToUse.prepareMethodOverrides();
 		} catch (BeanDefinitionValidationException ex) {
 			throw new BeanDefinitionStoreException(mbdToUse.getResourceDescription(),
@@ -489,7 +489,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
-			// 给BeanPostProcessors 一个机会来返回代理来替代真正的实例
+			// 在bean初始化前应用后置处理器，如果返回不为null，则直接返回
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				/*
@@ -1153,12 +1153,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			return obtainFromSupplier(instanceSupplier, beanName);
 		}
 
-		// 如果工厂方法不为空，则使用工厂方法初始化策略
+		//
+		// 如果工厂方法不为空，则通过工厂方法创建bean，如：<bean factory-method=""></bean>的情况
 		if (mbd.getFactoryMethodName() != null) {
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
 		}
 
 		// Shortcut when re-creating the same bean...
+		// 翻译：重新创建相同的bean时的快捷方式…
+		/*
+		 	当多次创建一个bean时，可以使用这个Shortcut，也就是说在不知道需要推断应该使用哪种方式构造bean时，比如在多次构造
+		 	同一个prototype类型的bean时，就可以走此处的Shortcut。
+		 	这里的resolved和mbd.constructorArgumentsResolved将会在bean第一次实例化时的过程中被设置
+		*/
 		boolean resolved = false;
 		boolean autowireNecessary = false;
 		if (args == null) {
@@ -1182,17 +1189,18 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Candidate constructors for autowiring?
+		// 有后置处理器决定返回哪些构造方法，如果只有默认构造方法，则返回null
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
 				mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
-			// 构造函数自动注入
+			// 有参构造函数实例化并自动注入
 			return autowireConstructor(beanName, mbd, ctors, args);
 		}
 
 		// Preferred constructors for default construction?
 		ctors = mbd.getPreferredConstructors();
 		if (ctors != null) {
-			// 构造函数自动注入
+			// 无参构造函数实例化并自动注入
 			return autowireConstructor(beanName, mbd, ctors, null);
 		}
 

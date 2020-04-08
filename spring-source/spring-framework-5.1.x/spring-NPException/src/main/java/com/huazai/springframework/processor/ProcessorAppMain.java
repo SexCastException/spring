@@ -1,5 +1,7 @@
 package com.huazai.springframework.processor;
 
+import com.huazai.springframework.imports.ChildBean;
+import com.huazai.springframework.imports.ParentBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;

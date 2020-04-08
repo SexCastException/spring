@@ -97,6 +97,7 @@ class ConstructorResolver {
 
 		Constructor<?> constructorToUse = null;
 		ArgumentsHolder argsHolderToUse = null;
+		// 确定参数列表，argsToUse有两种方式可以设置：一、通过beanDefinition设置，二、通过xml
 		Object[] argsToUse = null;
 
 		if (explicitArgs != null) {
@@ -104,6 +105,7 @@ class ConstructorResolver {
 		} else {
 			Object[] argsToResolve = null;
 			synchronized (mbd.constructorArgumentLock) {
+				// 获取已解析的构造方法
 				constructorToUse = (Constructor<?>) mbd.resolvedConstructorOrFactoryMethod;
 				if (constructorToUse != null && mbd.constructorArgumentsResolved) {
 					// Found a cached constructor...
@@ -118,6 +120,7 @@ class ConstructorResolver {
 			}
 		}
 
+		// 获取不到已解析的构造方法， 则开始解析构造方法
 		if (constructorToUse == null || argsToUse == null) {
 			// Take specified constructors, if any.
 			Constructor<?>[] candidates = chosenCtors;
@@ -151,10 +154,14 @@ class ConstructorResolver {
 					mbd.getResolvedAutowireMode() == AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR);
 			ConstructorArgumentValues resolvedValues = null;
 
+			/*
+				定义最小参数个数，如果构造方法参数列表给定了具体的值，那么这些值的个数就是构造方法参数的个数
+			 */
 			int minNrOfArgs;
 			if (explicitArgs != null) {
 				minNrOfArgs = explicitArgs.length;
 			} else {
+				// 实例一个对象，用来存放构造方法的参数值，当中主要存放了参数列表和参数值所对应的下标
 				ConstructorArgumentValues cargs = mbd.getConstructorArgumentValues();
 				resolvedValues = new ConstructorArgumentValues();
 				minNrOfArgs = resolveConstructorArguments(beanName, mbd, bw, cargs, resolvedValues);
@@ -466,6 +473,7 @@ class ConstructorResolver {
 							if (pnd != null) {
 								paramNames = pnd.getParameterNames(candidate);
 							}
+							// 因为spring只能提供字符串的参数值，故而需要进行实际类型的转换，并将转换的结果保存到 argsHolder
 							argsHolder = createArgumentArray(beanName, mbd, resolvedValues, bw,
 									paramTypes, paramNames, candidate, autowiring, candidates.length == 1);
 						} catch (UnsatisfiedDependencyException ex) {
