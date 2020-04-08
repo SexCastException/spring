@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="parentBean" class="com.huazai.springframework.imports.ParentBean">
+		<property name="name" value="parent"></property>
+	</bean>
+
+	<bean id="childBean" parent="parentBean" class="com.huazai.springframework.imports.ChildBean">
+		<property name="name" value="child"></property>
+		<property name="age" value="23"></property>
+	</bean>
+</beans>
