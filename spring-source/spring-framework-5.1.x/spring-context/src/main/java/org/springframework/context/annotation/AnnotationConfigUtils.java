@@ -263,7 +263,7 @@ public abstract class AnnotationConfigUtils {
 	}
 
 	/**
-	 * 处理bean的公共定义注解，并赋值到 {@link AnnotatedBeanDefinition}中去
+	 * 处理bean的常用定义注解，并赋值到 {@link AnnotatedBeanDefinition}中去
 	 *
 	 * @param abd
 	 * @param metadata

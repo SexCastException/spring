@@ -47,6 +47,8 @@ final class PostProcessorRegistrationDelegate {
 
 
 	/**
+	 * 调用 {@link BeanFactoryPostProcessor}实现类实现的方法 <br>
+	 * <p>
 	 * 1、先处理开发者自定义的 {@link BeanDefinitionRegistryPostProcessor}，然后再处理spring内置的 {@link BeanDefinitionRegistryPostProcessor} <br>
 	 * <p>
 	 * 2、先处理开发者自定义的 {@link BeanFactoryPostProcessor}，然后再处理spring内置的 {@link BeanFactoryPostProcessor} <br>

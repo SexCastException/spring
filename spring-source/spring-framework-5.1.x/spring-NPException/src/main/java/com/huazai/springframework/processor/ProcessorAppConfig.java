@@ -9,5 +9,5 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ComponentScan("com.huazai.springframework.processor")
-public class AppConfig {
+public class ProcessorAppConfig {
 }

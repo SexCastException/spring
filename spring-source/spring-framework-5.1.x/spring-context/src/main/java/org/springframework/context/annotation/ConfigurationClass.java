@@ -16,12 +16,6 @@
 
 package org.springframework.context.annotation;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.beans.factory.parsing.Location;
 import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.beans.factory.parsing.ProblemReporter;
@@ -35,7 +29,13 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+import java.util.*;
+
 /**
+ * 配置类，保存了配置的相关信息，配置类并不单单指加了 {@link Configuration}注解的类，还有加了 {@link Import}、
+ * {@link ImportResource}、{@link ComponentScan}等注解以及方法上加了 {@link Bean}注解的类都属于配置类，
+ * 只不过加了 {@link Configuration}的为全配置类，标识为full，其他配置类标识为lite
+ * <p>
  * Represents a user-defined {@link Configuration @Configuration} class.
  * Includes a set of {@link Bean} methods, including all such methods
  * defined in the ancestry of the class, in a 'flattened-out' manner.
@@ -43,9 +43,9 @@ import org.springframework.util.ClassUtils;
  * @author Chris Beams
  * @author Juergen Hoeller
  * @author Phillip Webb
- * @since 3.0
  * @see BeanMethod
  * @see ConfigurationClassParser
+ * @since 3.0
  */
 final class ConfigurationClass {
 
@@ -56,6 +56,9 @@ final class ConfigurationClass {
 	@Nullable
 	private String beanName;
 
+	/**
+	 * 记录该配置类是通过哪个配置类导入的
+	 */
 	private final Set<ConfigurationClass> importedBy = new LinkedHashSet<>(1);
 
 	private final Set<BeanMethod> beanMethods = new LinkedHashSet<>();
@@ -71,8 +74,9 @@ final class ConfigurationClass {
 
 	/**
 	 * Create a new {@link ConfigurationClass} with the given name.
+	 *
 	 * @param metadataReader reader used to parse the underlying {@link Class}
-	 * @param beanName must not be {@code null}
+	 * @param beanName       must not be {@code null}
 	 * @see ConfigurationClass#ConfigurationClass(Class, ConfigurationClass)
 	 */
 	public ConfigurationClass(MetadataReader metadataReader, String beanName) {
@@ -86,8 +90,9 @@ final class ConfigurationClass {
 	 * Create a new {@link ConfigurationClass} representing a class that was imported
 	 * using the {@link Import} annotation or automatically processed as a nested
 	 * configuration class (if importedBy is not {@code null}).
+	 *
 	 * @param metadataReader reader used to parse the underlying {@link Class}
-	 * @param importedBy the configuration class importing this one or {@code null}
+	 * @param importedBy     the configuration class importing this one or {@code null}
 	 * @since 3.1.1
 	 */
 	public ConfigurationClass(MetadataReader metadataReader, @Nullable ConfigurationClass importedBy) {
@@ -98,7 +103,8 @@ final class ConfigurationClass {
 
 	/**
 	 * Create a new {@link ConfigurationClass} with the given name.
-	 * @param clazz the underlying {@link Class} to represent
+	 *
+	 * @param clazz    the underlying {@link Class} to represent
 	 * @param beanName name of the {@code @Configuration} class bean
 	 * @see ConfigurationClass#ConfigurationClass(Class, ConfigurationClass)
 	 */
@@ -113,7 +119,8 @@ final class ConfigurationClass {
 	 * Create a new {@link ConfigurationClass} representing a class that was imported
 	 * using the {@link Import} annotation or automatically processed as a nested
 	 * configuration class (if imported is {@code true}).
-	 * @param clazz the underlying {@link Class} to represent
+	 *
+	 * @param clazz      the underlying {@link Class} to represent
 	 * @param importedBy the configuration class importing this one (or {@code null})
 	 * @since 3.1.1
 	 */
@@ -125,6 +132,7 @@ final class ConfigurationClass {
 
 	/**
 	 * Create a new {@link ConfigurationClass} with the given name.
+	 *
 	 * @param metadata the metadata for the underlying class to represent
 	 * @param beanName name of the {@code @Configuration} class bean
 	 * @see ConfigurationClass#ConfigurationClass(Class, ConfigurationClass)
@@ -161,8 +169,9 @@ final class ConfigurationClass {
 	/**
 	 * Return whether this configuration class was registered via @{@link Import} or
 	 * automatically registered due to being nested within another configuration class.
-	 * @since 3.1.1
+	 *
 	 * @see #getImportedBy()
+	 * @since 3.1.1
 	 */
 	public boolean isImported() {
 		return !this.importedBy.isEmpty();
@@ -170,6 +179,7 @@ final class ConfigurationClass {
 
 	/**
 	 * Merge the imported-by declarations from the given configuration class into this one.
+	 *
 	 * @since 4.0.5
 	 */
 	public void mergeImportedBy(ConfigurationClass otherConfigClass) {
@@ -179,8 +189,9 @@ final class ConfigurationClass {
 	/**
 	 * Return the configuration classes that imported this class,
 	 * or an empty Set if this configuration was not imported.
-	 * @since 4.0.5
+	 *
 	 * @see #isImported()
+	 * @since 4.0.5
 	 */
 	public Set<ConfigurationClass> getImportedBy() {
 		return this.importedBy;

@@ -42,12 +42,12 @@ public class BeanDefinitionHolder implements BeanMetadataElement {
 	private final BeanDefinition beanDefinition;
 
 	/**
-	 * {@code <bean>}标签的id属性值或name属性值第一个名字
+	 *
 	 */
 	private final String beanName;
 
 	/**
-	 * {@code <bean>}标签的name复合属性值集合
+	 * {@code bean别名
 	 */
 	@Nullable
 	private final String[] aliases;

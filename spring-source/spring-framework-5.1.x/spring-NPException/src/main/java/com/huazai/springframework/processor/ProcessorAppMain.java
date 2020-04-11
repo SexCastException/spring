@@ -1,11 +1,5 @@
 package com.huazai.springframework.processor;
 
-import com.huazai.springframework.imports.ChildBean;
-import com.huazai.springframework.imports.ParentBean;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanNameGenerator;
-import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
@@ -15,7 +9,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class ProcessorAppMain {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		applicationContext.register(AppConfig.class);
+		applicationContext.register(ProcessorAppConfig.class);
 		applicationContext.addBeanFactoryPostProcessor(new MyBeanFactoryPostProcessor());
 		applicationContext.addBeanFactoryPostProcessor(new CityDao());
 		/*applicationContext.setBeanNameGenerator(new BeanNameGenerator() {

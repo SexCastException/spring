@@ -70,6 +70,8 @@ abstract class ConfigurationClassUtils {
 
 
 	/**
+	 * 如果为配置类则返回true，否则返回false
+	 * <p>
 	 * Check whether the given bean definition is a candidate for a configuration class
 	 * (or a nested component class declared within a configuration/component class,
 	 * to be auto-registered as well), and mark it accordingly.
@@ -200,7 +202,7 @@ abstract class ConfigurationClassUtils {
 
 	/**
 	 * 判断对象的 configurationClass 属性值是否等于 full
-	 *
+	 * <p>
 	 * Determine whether the given bean definition indicates a full {@code @Configuration}
 	 * class, through checking {@link #checkConfigurationClassCandidate}'s metadata marker.
 	 */
@@ -210,7 +212,7 @@ abstract class ConfigurationClassUtils {
 
 	/**
 	 * 判断对象的 configurationClass 属性值是否等于 lite
-	 *
+	 * <p>
 	 * Determine whether the given bean definition indicates a lite {@code @Configuration}
 	 * class, through checking {@link #checkConfigurationClassCandidate}'s metadata marker.
 	 */

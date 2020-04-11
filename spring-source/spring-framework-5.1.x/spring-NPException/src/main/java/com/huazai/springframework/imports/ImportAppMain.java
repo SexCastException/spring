@@ -9,8 +9,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class ImportAppMain {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(ImportAppConfig.class);
+
+		UserService userService = applicationContext.getBean(UserService.class);
+		System.out.println(userService);
+
 		UserDao userDao = applicationContext.getBean(UserDao.class);
-//		userDao = (UserDao) applicationContext.getBean("com.huazai.springframework.imports.UserDao");
 		userDao.queryUser();
 
 		ParentBean parentBean = (ParentBean) applicationContext.getBean("parentBean");
@@ -18,5 +21,8 @@ public class ImportAppMain {
 
 		ChildBean childBean = (ChildBean) applicationContext.getBean("childBean");
 		System.out.println(childBean);
+
+		User user = applicationContext.getBean(User.class);
+		System.out.println(user);
 	}
 }

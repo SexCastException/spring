@@ -559,7 +559,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
-			// 准备bean工厂以供在此上下文中使用
+			// 准备bean工厂以供在此上下文中使用，为bean工厂设置默认组价
 			prepareBeanFactory(beanFactory);
 
 			try {
@@ -687,6 +687,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * 准备bean工厂，为bean工厂设置一些默认组件，如bean工厂的类加载器、监听器、bean的后置处理器、bean依赖注入忽略的接口等等
+	 * <p>
 	 * Configure the factory's standard context characteristics,
 	 * such as the context's ClassLoader and post-processors.
 	 *

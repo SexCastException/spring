@@ -78,6 +78,7 @@ class ComponentScanAnnotationParser {
 
 		/*以下代码为解析@ComponentScan注解，并将各种配置值赋值到ClassPathBeanDefinitionScanner对象 */
 
+		// 获取beanName生成器
 		Class<? extends BeanNameGenerator> generatorClass = componentScan.getClass("nameGenerator");
 		boolean useInheritedGenerator = (BeanNameGenerator.class == generatorClass);
 		scanner.setBeanNameGenerator(useInheritedGenerator ? this.beanNameGenerator :
@@ -111,6 +112,7 @@ class ComponentScanAnnotationParser {
 		}
 
 		Set<String> basePackages = new LinkedHashSet<>();
+		// 获取扫描包路劲
 		String[] basePackagesArray = componentScan.getStringArray("basePackages");
 		for (String pkg : basePackagesArray) {
 			String[] tokenized = StringUtils.tokenizeToStringArray(this.environment.resolvePlaceholders(pkg),
@@ -130,6 +132,7 @@ class ComponentScanAnnotationParser {
 				return declaringClass.equals(className);
 			}
 		});
+		// 准备完扫描器，开始扫描该包下的bean定义
 		return scanner.doScan(StringUtils.toStringArray(basePackages));
 	}
 

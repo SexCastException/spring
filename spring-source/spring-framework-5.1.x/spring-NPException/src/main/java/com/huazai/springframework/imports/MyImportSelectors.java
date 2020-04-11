@@ -10,6 +10,6 @@ import org.springframework.core.type.AnnotationMetadata;
 public class MyImportSelectors implements ImportSelector {
 	@Override
 	public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-		return new String[]{UserDao.class.getName()};
+		return new String[]{UserService.class.getName()};
 	}
 }

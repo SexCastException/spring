@@ -20,7 +20,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 
 /**
- * 扩展了 {@link BeanFactoryPostProcessor}接口，此接口对 bean注册进行了后置处理 <br>
+ * 扩展了 {@link BeanFactoryPostProcessor}接口，此接口对 bean注册进行后置处理 <br>
  * <p>
  * Extension to the standard {@link BeanFactoryPostProcessor} SPI, allowing for
  * the registration of further bean definitions <i>before</i> regular

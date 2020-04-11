@@ -1,5 +1,7 @@
 package com.huazai.springframework.imports;
 
+import org.springframework.context.annotation.Bean;
+
 /**
  * @author pyh
  * @date 2020/4/5 17:53
@@ -13,6 +15,11 @@ public class ChildBean extends ParentBean {
 
 	public void setAge(int age) {
 		this.age = age;
+	}
+
+	@Bean
+	public User getUser() {
+		return new User();
 	}
 
 	@Override

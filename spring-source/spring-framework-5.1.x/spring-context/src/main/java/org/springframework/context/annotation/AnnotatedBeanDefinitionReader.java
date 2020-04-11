@@ -241,7 +241,7 @@ public class AnnotatedBeanDefinitionReader {
 		abd.setScope(scopeMetadata.getScopeName());
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
 
-		// 处理bean的公共定义注解，如 Lazy，DependsOn、Role等
+		// 解析bean的公共定义注解，如 Lazy，DependsOn、Role等，并将解析的值赋值到beanDefinition中
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
