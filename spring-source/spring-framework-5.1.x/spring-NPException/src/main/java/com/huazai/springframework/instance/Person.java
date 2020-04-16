@@ -9,19 +9,7 @@ public class Person {
 	private String nickName;
 	private int age;
 
-	private static String factoryMethod(int iii) {
-		return "hello world";
-	}
-
 	public Person() {
-
-	}
-
-	public Person(String name) {
-		this.name = name;
-	}
-
-	public Person(Object object) {
 
 	}
 
@@ -32,15 +20,6 @@ public class Person {
 
 	protected Person(Object object, Object object2) {
 
-	}
-
-	public Person(String name, String nickName, int age) {
-		this.name = name;
-		this.nickName = nickName;
-		this.age = age;
-	}
-
-	protected Person(Object object, Object object1, Object object2) {
 	}
 
 	public String getName() {

@@ -260,7 +260,7 @@ final class PostProcessorRegistrationDelegate {
 
 		/*
 			从beanDefinitionMap中获取未注册的BeanPostProcessor实现类，包括自定义的和spring内置的
-			spring内置的bean后置处理器在AnnotationConfigUtils.registerAnnotationConfigProcessors()中被加入
+			spring内置的bean后置处理器在 AnnotationConfigUtils.registerAnnotationConfigProcessors()中被加入
 		*/
 		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
 

@@ -105,7 +105,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner,
 							  final Constructor<?> ctor, Object... args) {
 
-		if (!bd.hasMethodOverrides()) {
+		if (!bd.hasMethodOverrides()) {    // 不存在覆盖方法
 			if (System.getSecurityManager() != null) {
 				// use own privileged to change accessibility (when security is on)
 				AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
@@ -113,8 +113,9 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					return null;
 				});
 			}
+			// 直接通过反射创建实例
 			return BeanUtils.instantiateClass(ctor, args);
-		} else {
+		} else {    // 如果覆盖方法则使用cglib动态代理创建bean，以便在创建代理对象的同时将动态方法织入bean
 			return instantiateWithMethodInjection(bd, beanName, owner, ctor, args);
 		}
 	}

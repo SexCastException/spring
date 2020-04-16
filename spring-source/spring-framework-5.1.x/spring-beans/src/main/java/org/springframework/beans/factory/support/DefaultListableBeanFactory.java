@@ -836,7 +836,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				if (isFactoryBean(beanName)) {
 					// 如果是 FactoryBean实现类，beanName加上前缀“&”
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
-					if (bean instanceof FactoryBean) {
+					if (bean instanceof FactoryBean) {	// 获取的bean如果是FactoryBean实现类
 						final FactoryBean<?> factory = (FactoryBean<?>) bean;
 						boolean isEagerInit;
 						if (System.getSecurityManager() != null && factory instanceof SmartFactoryBean) {
@@ -847,6 +847,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							isEagerInit = (factory instanceof SmartFactoryBean &&
 									((SmartFactoryBean<?>) factory).isEagerInit());
 						}
+						// 如果是迫切初始化，则初始化bean（该bean没有加前缀，不是factoryBean，而是factoryBean实现类的getObject返回的对象）
 						if (isEagerInit) {
 							getBean(beanName);
 						}

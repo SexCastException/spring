@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="personWithOneArgs" class="com.huazai.springframework.instance.Person" factory-method="factoryMethod">
-		<constructor-arg name="iii" value="111"></constructor-arg>
+	<bean id="userDao" class="com.huazai.springframework.instance.UserDao">
+		<constructor-arg index="0" ref="user"></constructor-arg>
+<!--		<constructor-arg index="0" value="1"></constructor-arg>-->
+<!--		<constructor-arg index="1" value="1"></constructor-arg>-->
+<!--		<constructor-arg index="2" value="aaaa"></constructor-arg>-->
 	</bean>
 
-	<bean id="personWithOneArgs1" class="com.huazai.springframework.instance.Person">
-		<constructor-arg index="0"><bean class="java.lang.Object"></bean></constructor-arg>
-	</bean>
+	<bean id="person" class="com.huazai.springframework.instance.Person"></bean>
+
+	<bean id="user" class="com.huazai.springframework.instance.User"></bean>
 </beans>

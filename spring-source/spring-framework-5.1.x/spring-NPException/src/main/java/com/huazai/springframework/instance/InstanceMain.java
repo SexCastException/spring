@@ -9,9 +9,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class InstanceMain {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(InstanceAppConfig.class);
-		System.out.println(applicationContext.getBean("personWithOneArgs"));
-
-		Person personWithOneArgs1 = (Person) applicationContext.getBean("personWithOneArgs1");
-		System.out.println(personWithOneArgs1);
+		System.out.println(applicationContext.getBean("userDao", new Person()));
 	}
 }
